@@ -1,6 +1,6 @@
 #!/bin/env python
 import boto3 as b3
-
+from argparse import ArgumentParser as argp
 #
 # ami-050184d2d97a1193f us-west-1
 # ami-0671b2fb0bfa2a568 us-east-2
@@ -15,6 +15,35 @@ AWSTYPE     = "t2.micro" # t2.medium
 AWSMAX      = 1
 AWSMIN      = 1
 AWSKEYPAIR  = 'KaliLinux'
+
+class Menu:
+    
+    
+    def parsearguments(self):
+        
+        parser = argp()
+        
+        parser.add_argument("--awstype", "-z", dest="sice", 
+                            help="""choose the sice of your vm in aws, types: 
+                            t2.micro, t2.small, t2.medium, t2.large, t2.xlarge.
+                            Remember visit aws.com to see the cost for each vm""")
+        
+        parser.add_argument("--maxvm", "-max", dest="maxvm",
+                            help="Max number of the same instances",
+                            type=int)
+        
+        parser.add_argument("--target", "-t", dest="",
+                            help="Min number of the same instances default 1",
+                            default=1,
+                            type=int)
+        
+        parser.add_argument("")
+        return parser.parse_args()
+
+
+    def run_menu(self):
+        pass
+
 
 
 class Instance:
@@ -83,8 +112,6 @@ class Instance:
         
 
 
-awsintances = Instance(AWSIMAGE, AWSTYPE, AWSMAX, AWSMIN, AWSKEYPAIR)
+#awsintances = Instance(AWSIMAGE, AWSTYPE, AWSMAX, AWSMIN, AWSKEYPAIR)
 
 #awsintances.runinstance()
-
-awsintances.getinfo()

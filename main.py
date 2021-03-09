@@ -1,24 +1,17 @@
 import awsinstance as awsins
+from argparse import ArgumentParser as argp
+
+
+
+def parsearguments():
+    parser = argp()
+    parser.add_argument("--saludar", "-s", help="Imprime un saludo")
+    parser.add_argument("--despedir", "-d", help="Imprime una despedida")
+    parser.add_argument("--target", "-t", help="Imprime la direccion IP")
+    return parser.parse_args()
+
 
 def run_menu():
-    flagsmenu = True
-    while flagsmenu:
-        
-        opc = int(input(
-            
-            """
-            1 - Run the instance
-            2 - List
-            3 - Start
-            4 - Stop
-            5 - Terminate
-            """
-            ))
-        if opc == 1:
-            flagsmenu == False
-        elif opc == 2:
-            flagsmenu == False
-        elif opc == 3:
-            flagsmenu == False
+    pass
 
 run_menu()
