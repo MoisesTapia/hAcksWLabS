@@ -49,6 +49,15 @@ def parsearguments():
     parser.add_argument("--restart", "-r" ,dest="restart",
                         help="Restart the instance or instances")
     
+    parser.add_argument("--list", "-ls" ,dest="list",
+                        help="list all instances in your account")
+
+    parser.add_argument("--getinfo", "-i" ,dest="getinfo",
+                        help="get info of your instance")
+    
+    parser.add_argument("--instanced", "-id" ,dest="instanceid",
+                        help="Restart the instance or instances")
+    
     return parser.parse_args()
 
 
@@ -112,13 +121,18 @@ class Instance:
             #print(info['State']['Name'])
     
     def start_instances(self):
-        pass
-    def stop_instances(self):
+        print("The next instance will be available in a few minutes")
+        aws_stop = client.stop_instances(InstanceIds=['i-02aa6fe76d54a8411'])
         
+    def stop_instances(self):
+        print("The next instance will be stop for few seconds")
         aws_stop = client.stop_instances(InstanceIds=['i-02aa6fe76d54a8411'])
         
     def terminate_instances(self):
         aws_terminate = client.terminate_instances(InstanceIds=['i-02aa6fe76d54a8411'])
+    
+    def restart_instance(self):
+        pass
     
     def list_instances(self):
         pass
@@ -142,4 +156,12 @@ awsintances = Instance(AWSIMAGE, AWSTYPE, AWSMAX, AWSMIN, AWSKEYPAIR)
 
 if awsargp.launch == "aws":
     print("Your ami: {}, your insta type: {}, max instances: {}, min instances: {}, your ssh key: {}".format(AWSIMAGE, AWSTYPE, AWSMAX, AWSMIN, AWSKEYPAIR))
-    #awsintances.runinstance()
+    awsintances.runinstance()
+elif awsargp.start == None:
+    awsintances.start_instances()
+elif awsargp.stop == None:
+    awsintances.stop_instances()
+elif awsargp.restart == None:
+    awsintances.restart_instance()
+elif awsargp.terminate == None:
+    awsintances.terminate_instances()

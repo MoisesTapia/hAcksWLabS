@@ -29,6 +29,20 @@ usage: awsinstance.py [-h] [--awstype SIZE] [--maxvm MAXVM] [--minvm MINVM]
 |   -t     |   --terminate |    $1 |
 |   -r     |   --restart   |    $1 |
 
+## ![Amazon EC2 Instance Types](https://aws.amazon.com/ec2/instance-types/?nc1=h_ls)
+
+
+|                                    Table of Instances Types                                  |
+|----------------------------------------------------------------------------------------------|
+|  Instance   |     vCPU*     |  CPU Credits / hour | Mem GiB|  Storage  | Network Performance |
+|-------------|:-------------:|---------------------|:------:|-----------|:-------------------:|
+|  t2.nano    |       1       |           3         |   0.5  |  EBS-Only |           Low       |
+|  t2.micro   |       1       |           6         |    1   |  EBS-Only |   Low to Moderate   |
+|  t2.small   |       1       |           12        |    2   |  EBS-Only |   Low to Moderate   |
+|  t2.medium  |       2       |           24        |    4   |  EBS-Only |   Low to Moderate   |
+|  t2.large   |       2       |           36        |    8   |  EBS-Only |   Low to Moderate   |
+|  t2.xlarge  |       4       |           54        |    16  |  EBS-Only |      Moderate       |
+|  t2.medium  |       8       |           81        |    32  |  EBS-Only |      Moderate       |
 
 
 ## Use docker to deploy this tool
@@ -47,7 +61,8 @@ docker run -d -ti --name hackslabs <image_id>
 ```bash
 docker ps
 ```
+## Execute commands inside of container
 
 ```bash
-
+docker exec -ti <conatiner_name> /bin/bash
 ```
