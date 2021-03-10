@@ -15,6 +15,11 @@ usage: awsinstance.py [-h] [--awstype SIZE] [--maxvm MAXVM] [--minvm MINVM]
                       [--start START] [--terminate TERMINATE]
                       [--restart RESTART]
 ```
+## Basic Example
+```bash
+python3 hackslabs.py -l aws -z t2.micro -mx 1 -mn 1 -k KaliLinux
+```
+
 ## Commands to use this script
 
 |  short   |     large     |  help |
@@ -29,11 +34,11 @@ usage: awsinstance.py [-h] [--awstype SIZE] [--maxvm MAXVM] [--minvm MINVM]
 |   -t     |   --terminate |    $1 |
 |   -r     |   --restart   |    $1 |
 
-## ![Amazon EC2 Instance Types](https://aws.amazon.com/ec2/instance-types/?nc1=h_ls)
+## [Amazon EC2 Instance Types](https://aws.amazon.com/ec2/instance-types/?nc1=h_ls)
 
 
 |                                    Table of Instances Types                                  |
-|----------------------------------------------------------------------------------------------|
+|-------------|---------------|---------------------|--------|-----------|---------------------|
 |  Instance   |     vCPU*     |  CPU Credits / hour | Mem GiB|  Storage  | Network Performance |
 |-------------|:-------------:|---------------------|:------:|-----------|:-------------------:|
 |  t2.nano    |       1       |           3         |   0.5  |  EBS-Only |           Low       |
