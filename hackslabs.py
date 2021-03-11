@@ -65,7 +65,7 @@ def parsearguments():
     
     parser.add_argument("-ls", "--list", dest="list",
                         type=str,
-                        default="all",
+                        default="vms",
                         help="list all instances in your account")
 
     parser.add_argument("-in" , "--getinfo", dest="getinfo",
@@ -95,7 +95,6 @@ class Instance:
         self.keypair        =   keypair
     
     def runinstance(self):
-        tprint(''' Please Wait we are running your instance''', decoration="barcode1")
         resp = client.run_instances(
             ImageId = self.imageid,
             InstanceType = self.instancetype,
@@ -162,49 +161,65 @@ class Instance:
     def getinfo_instances(self):
         resp = client.describe_instances()
         
-        print(Fore.LIGHTRED_EX + "Basic Information" + Fore.RESET)
-        
-        for reserved in resp['Reservations']:
-            for info in reserved['Instances']:
-                
-                print("Image ID: {}".format(info['ImageId']))
-                print("Instance ID: {}".format(info['InstanceId']))
-                print(info['KeyName'])
-                print(info['LaunchTime'])
-                print(info['Monitoring']['State'])
-        print(Fore.LIGHTRED_EX + "------------------------------------" + Fore.RESET)
-        
-        print(Fore.LIGHTBLUE_EX + "\n\t\tPlacement" + Fore.RESET)
-        for getinfo2 in resp['Reservations']:
-            for info2 in getinfo2['Placement']:
-                print(info2['AvailabilityZone'])
-                print(info2['HostId'])
-         
-        print(Fore.LIGHTGREEN_EX + "\n\t\tPlatform" + Fore.RESET)       
-        for platforms in resp['Reservations']:
-            print(Fore.LIGHTGREEN_EX + """
-                  Information about the platform:\n
-                  Platform: {}\n
-                  PrivateDNS: {}\n
-                  PrivateIP Address: {}
-                  """.format(platforms['Platform'], platforms['PrivateDnsName'], platforms['PrivateIpAddress']) + Fore.RESET)
-        
-        print(Fore.LIGHTRED_EX + "------------------------------------" + Fore.RESET)
-        
-        print()
-        for publicinfo in resp['Reservations']:
-            print(publicinfo['PublicDnsName'])
-            print(publicinfo['PublicIpAddress'])
-            print(publicinfo['RamdiskId'])
-            
-    
-    def list_instances(self):
-        print("List of Instances and status")
+        print(Fore.LIGHTCYAN_EX + "\n\t\tList of Instances and status\n"+ Fore.RESET)
         resp = client.describe_instances()
 
         for reservation in resp['Reservations']:
             for instances in reservation['Instances']:
                 print("Id of instances: {}".format(instances['InstanceId']))
+        print(Fore.LIGHTRED_EX + "------" *10 + Fore.RESET)
+            
+        print(Fore.LIGHTRED_EX + "\n\t\tBasic Information \n" + Fore.RESET)
+        
+        for reserved in resp['Reservations']:
+            for info in reserved['Instances']:
+                
+                print(Fore.LIGHTBLUE_EX + "Image ID: {}".format(info['ImageId'] + Fore.RESET))
+                print("Instance ID: {}".format(info['InstanceId']))
+                print("SSH Keys AWS: {}".format(info['KeyName']))
+                print(info['LaunchTime'])
+                print(info['Monitoring']['State'] + "\n")
+                
+        print(Fore.LIGHTRED_EX + "------" *10 + Fore.RESET)
+        
+        print(Fore.LIGHTBLUE_EX + "\n\t\tPlacement" + Fore.RESET)
+        for getinfo2 in resp['Reservations']:
+            for info2 in getinfo2['Instances']:
+                
+                    print("Availability Zone: {}".format(info2['Placement']['AvailabilityZone']))
+                    #print(info2['Placement']['HostId'])
+                    #print("Affinity: {}".format(info2['Placement']['Affinity']))
+                    print("Group name: {}".format(info['Placement']['GroupName'] + "\n"))
+        
+        print(resp)
+                    
+        print(Fore.LIGHTRED_EX + "------" *10 + Fore.RESET)
+        print(Fore.LIGHTGREEN_EX + "\n\t\tPlatform\n" + Fore.RESET)
+               
+        for pt in resp['Reservations']:
+            for pt2 in pt['Instances']:
+                
+                print(Fore.LIGHTGREEN_EX + """
+                      Information about the platform:\n
+                      Platform: {}\n
+                      PrivateDNS: {}\n
+                      PrivateIP Address: {}
+                      """.format(pt2['Platform'], pt2['PrivateDnsName'], pt2['PrivateIpAddress']) + Fore.RESET)
+        
+        print(Fore.LIGHTRED_EX + "------" *10 + Fore.RESET)
+        
+        print(Fore.LIGHTGREEN_EX + "\n\t\tPublic options\n"  + Fore.RESET)
+        for publicinfo in resp['Reservations']:
+            for pbl in publicinfo['Instances']:
+                print("Your Public DNSname: {}".format(pbl['PublicDnsName']))
+                print("Your Public IP: {}".format(pbl['PublicIpAddress']))
+                #print(pbl['RamdiskId'])
+                print("Your Arch: {}".format(pbl['Architecture']))
+                print("State code: {}".format(pbl['State']['Name']))
+                print("State code: {}".format(pbl['State']['Code']))
+                print("Subnet ID: {}".format(pbl['SubnetId']))
+        
+        print(Fore.LIGHTRED_EX + "------" *10 + Fore.RESET)
 
 
 def main():
@@ -232,6 +247,8 @@ AWSKEYPAIR  = awsargp.keys
 
 awsintances = Instance(AWSIMAGE, AWSTYPE, AWSMAX, AWSMIN, AWSKEYPAIR)
 
+main()
+
 if awsargp.launch and awsargp.size and awsargp.maxvm and awsargp.minvm and awsargp.keys:
     print(Fore.GREEN + "\n\t\t\t\tTable of Resume" + Fore.RESET)
     print(Fore.LIGHTGREEN_EX +  "\n\t\tsave this information if you want to stop or start your instance \n" + Fore.RESET)
@@ -243,12 +260,6 @@ elif awsargp.stop:
 elif awsargp.terminate:
     awsintances.terminate_instances(awsargp.terminate)
 elif awsargp.getinfo:
-    print("getinfo")
-    #awsintances.getinfo_instances()
-elif awsargp.list:
-    print("List vms")
-    #awsintances.list_instances()
+    awsintances.getinfo_instances()
 
-if __name__ == '__main__':
-    main()
     

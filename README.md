@@ -15,7 +15,7 @@ usage: awsinstance.py [-h] [--awstype SIZE] [--maxvm MAXVM] [--minvm MINVM]
                       [--start START] [--terminate TERMINATE]
                       [--restart RESTART]
 ```
-## Basic Example
+## Example
 ```bash
 python3 hackslabs.py -l aws -z t2.micro -mx 1 -mn 1 -k KaliLinux
 ```
@@ -36,9 +36,6 @@ python3 hackslabs.py -l aws -z t2.micro -mx 1 -mn 1 -k KaliLinux
 
 ## [Amazon EC2 Instance Types](https://aws.amazon.com/ec2/instance-types/?nc1=h_ls)
 
-
-|                                    Table of Instances Types                                  |
-|-------------|---------------|---------------------|--------|-----------|---------------------|
 |  Instance   |     vCPU*     |  CPU Credits / hour | Mem GiB|  Storage  | Network Performance |
 |-------------|:-------------:|---------------------|:------:|-----------|:-------------------:|
 |  t2.nano    |       1       |           3         |   0.5  |  EBS-Only |           Low       |
