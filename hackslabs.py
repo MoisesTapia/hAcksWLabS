@@ -1,10 +1,17 @@
 #!/bin/env python
-# Maintaner: Moises Tapia(equinockx)
+# Author: Moises Tapia(equinockx)
 # Github: https://github.com/MoisesTapia
 #
 
 import boto3 as b3
 from argparse import ArgumentParser as argp
+from art import *
+from colorama import Fore, init, Back, Style
+#from rich.console import Console
+#from rich.table import Column, Table
+
+
+init()
 
 #
 # ami-050184d2d97a1193f us-west-1
@@ -14,6 +21,7 @@ from argparse import ArgumentParser as argp
 
 client = b3.client('ec2')
 
+#console = Console()
 
 def parsearguments():
     
@@ -55,20 +63,15 @@ def parsearguments():
                         help="""
                         Terminate the instance or instances this option will delete the instances take care""")
     
-    parser.add_argument("-r", "--restart",dest="restart",
-                        help="Restart the instance or instances")
-    
     parser.add_argument("-ls", "--list", dest="list",
                         type=str,
-                        default="vm",
+                        default="all",
                         help="list all instances in your account")
 
     parser.add_argument("-in" , "--getinfo", dest="getinfo",
+                        type=str,
+                        default="vm",
                         help="get info of your instance")
-    
-    parser.add_argument( "-id" ,"--instanced",dest="instanceid",
-                        help="Restart the instance or instances")
-    
     return parser.parse_args()
 
 
@@ -80,7 +83,6 @@ class Instance:
                 - start
                 - stop
                 - terminate
-                - restart
     other options 
     """
 
@@ -91,10 +93,9 @@ class Instance:
         self.mincount       =   mincount
         self.maxcount       =   maxcount
         self.keypair        =   keypair
-        #self.instanceid     =   instanceid
     
     def runinstance(self):
-        
+        tprint(''' Please Wait we are running your instance''', decoration="barcode1")
         resp = client.run_instances(
             ImageId = self.imageid,
             InstanceType = self.instancetype,
@@ -148,6 +149,7 @@ class Instance:
             print("Stop instance ID: {}".format(instances['InstanceId']))
             print("Code: {}".format(instances['CurrentState']['Code']))
             print("Code: {}".format(instances['CurrentState']['Name']))
+            
     def terminate_instances(self,instanceid):
         self.instanceid = instanceid
         aws_terminate = client.terminate_instances(InstanceIds=[self.instanceid])
@@ -157,8 +159,44 @@ class Instance:
             print("Code: {}".format(instances['CurrentState']['Code']))
             print("Code: {}".format(instances['CurrentState']['Name']))
     
-    def getinfo(self):
-        pass
+    def getinfo_instances(self):
+        resp = client.describe_instances()
+        
+        print(Fore.LIGHTRED_EX + "Basic Information" + Fore.RESET)
+        
+        for reserved in resp['Reservations']:
+            for info in reserved['Instances']:
+                
+                print("Image ID: {}".format(info['ImageId']))
+                print("Instance ID: {}".format(info['InstanceId']))
+                print(info['KeyName'])
+                print(info['LaunchTime'])
+                print(info['Monitoring']['State'])
+        print(Fore.LIGHTRED_EX + "------------------------------------" + Fore.RESET)
+        
+        print(Fore.LIGHTBLUE_EX + "\n\t\tPlacement" + Fore.RESET)
+        for getinfo2 in resp['Reservations']:
+            for info2 in getinfo2['Placement']:
+                print(info2['AvailabilityZone'])
+                print(info2['HostId'])
+         
+        print(Fore.LIGHTGREEN_EX + "\n\t\tPlatform" + Fore.RESET)       
+        for platforms in resp['Reservations']:
+            print(Fore.LIGHTGREEN_EX + """
+                  Information about the platform:\n
+                  Platform: {}\n
+                  PrivateDNS: {}\n
+                  PrivateIP Address: {}
+                  """.format(platforms['Platform'], platforms['PrivateDnsName'], platforms['PrivateIpAddress']) + Fore.RESET)
+        
+        print(Fore.LIGHTRED_EX + "------------------------------------" + Fore.RESET)
+        
+        print()
+        for publicinfo in resp['Reservations']:
+            print(publicinfo['PublicDnsName'])
+            print(publicinfo['PublicIpAddress'])
+            print(publicinfo['RamdiskId'])
+            
     
     def list_instances(self):
         print("List of Instances and status")
@@ -169,7 +207,19 @@ class Instance:
                 print("Id of instances: {}".format(instances['InstanceId']))
 
 
+def main():
+    tprint('hAcksWlabS')
+    print(Fore.GREEN + "\tBy: Moises Tapia\t" + Fore.RESET + Fore.LIGHTGREEN_EX + "Github: https://github.com/MoisesTapia/" + Fore.RESET)
+    print("""
+        How to use: \n
+          
+        python3 hackslabs.py --help
+          
+        usage: hackslabs.py [-h] [-z SIZE] [-mx MAXVM] [-mn MINVM] [-k KEYS]
+                  [-l LAUNCH] [--stop STOP] [-s START] [-t TERMINATE]
+                  [-ls LIST] [-in GETINFO]
 
+          """)
 
 awsargp = parsearguments()
 
@@ -182,10 +232,9 @@ AWSKEYPAIR  = awsargp.keys
 
 awsintances = Instance(AWSIMAGE, AWSTYPE, AWSMAX, AWSMIN, AWSKEYPAIR)
 
-
 if awsargp.launch and awsargp.size and awsargp.maxvm and awsargp.minvm and awsargp.keys:
-    print("\n\t\t\t\tTable of Resume \n")
-    print("\n\t\tsave this information if you want to stop your instance \n")
+    print(Fore.GREEN + "\n\t\t\t\tTable of Resume" + Fore.RESET)
+    print(Fore.LIGHTGREEN_EX +  "\n\t\tsave this information if you want to stop or start your instance \n" + Fore.RESET)
     awsintances.runinstance()
 elif awsargp.start:
     awsintances.start_instances(awsargp.start)
@@ -193,5 +242,13 @@ elif awsargp.stop:
     awsintances.stop_instances(awsargp.stop)
 elif awsargp.terminate:
     awsintances.terminate_instances(awsargp.terminate)
+elif awsargp.getinfo:
+    print("getinfo")
+    #awsintances.getinfo_instances()
 elif awsargp.list:
-    awsintances.list_instances()
+    print("List vms")
+    #awsintances.list_instances()
+
+if __name__ == '__main__':
+    main()
+    

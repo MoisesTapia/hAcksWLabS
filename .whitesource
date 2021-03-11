@@ -1,5 +1,6 @@
 {
   "scanSettings": {
+    "configMode": "AUTO",
     "baseBranches": []
   },
   "checkRunSettings": {
