@@ -1,14 +1,41 @@
 # hAcksWLabS
+![docker](https://img.shields.io/badge/Docker-v19.03.12-blue?style=plastic&logo=docker) ![Python](https://img.shields.io/badge/Python-3.6+-yellow?style=plastic&logo=Python) ![AWS](https://img.shields.io/badge/aws-black?style=plastic&logo=amazon)
 
-https://www.travis-ci.com/MoisesTapia/hAcksWLabS.svg?token=5ExeHzDK51pVeE5oa7h7&branch=main
-
-## Tools do you need
+## Tools and packages do you need
 
 - [X] awscli
 - [X] boto3
 - [X] argparse
+- [X] art
+- [X] colorama
+
+```bash
+python3 pip3 -r install requeriments.txt
+```
 
 ## How to use
+
+After installing boto3
+
+Next, set up credentials (in e.g. ~/.aws/credentials):
+
+```python
+[default]
+aws_access_key_id = YOUR_KEY
+aws_secret_access_key = YOUR_SECRET
+```
+Then, set up a default region (in e.g. ~/.aws/config):
+
+```python
+[default]
+region=us-east-1
+```
+
+
+
+
+
+
 
 ```bash
 ➜  hAckWsLabS ✗ python3 awsinstance.py --help
@@ -24,17 +51,16 @@ python3 hackslabs.py -l aws -z t2.micro -mx 1 -mn 1 -k KaliLinux
 
 ## Commands to use this script
 
-|  short   |     large     |  help |
-|----------|:-------------:|------:|
-|    -z    |   --awstype   | $1600 |
-|   -mx    |   --maxvm     |   $12 |
-|   -mn    |   --minvm     |    $1 |
-|   -k     |   --keypair   |    $1 |
-|   -l     |   --launch    |    $1 |
-|          |   --stop      |    $1 |
-|   -s     |   --start     |    $1 |
-|   -t     |   --terminate |    $1 |
-|   -r     |   --restart   |    $1 |
+|  short   |     large     |         help           |
+|----------|:-------------:|-----------------------:|
+|    -z    |   --awstype   |  type of the instance  |
+|   -mx    |   --maxvm     |  Max number of VM      |
+|   -mn    |   --minvm     |  Min number            |
+|   -k     |   --keypair   |  SSH Keys Pairs in AWS |
+|   -l     |   --launch    |  Launch instance       |
+|          |   --stop      |  Stop instances        |
+|   -s     |   --start     |  Start instances       |
+|   -t     |   --terminate |  Terminate instances   |
 
 ## [Amazon EC2 Instance Types](https://aws.amazon.com/ec2/instance-types/?nc1=h_ls)
 

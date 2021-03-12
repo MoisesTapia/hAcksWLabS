@@ -4,7 +4,7 @@
 #
 
 import boto3 as b3
-from argparse import ArgumentParser as argp
+import argparse as argp
 from art import *
 from colorama import Fore, init, Back, Style
 #from rich.console import Console
@@ -25,7 +25,9 @@ client = b3.client('ec2')
 
 def parsearguments():
     
-    parser = argp()
+    parser = argp.ArgumentParser(
+        description=__doc__, 
+        formatter_class=argp.RawDescriptionHelpFormatter)
     
     parser.add_argument("-z", "--awstype", dest="size", 
                         help="""choose the sice of your vm in aws, types: 
