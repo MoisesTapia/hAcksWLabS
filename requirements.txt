@@ -2,3 +2,4 @@ art==4.6
 colorama==0.4.3
 argparse==1.4.0
 boto3==1.17.25
+awscli=1.19.27

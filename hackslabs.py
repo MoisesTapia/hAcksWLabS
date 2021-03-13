@@ -7,9 +7,9 @@ import boto3 as b3
 import argparse as argp
 from art import *
 from colorama import Fore, init, Back, Style
+import sys
 #from rich.console import Console
 #from rich.table import Column, Table
-
 
 init()
 
@@ -227,16 +227,6 @@ class Instance:
 def main():
     tprint('hAcksWlabS')
     print(Fore.GREEN + "\tBy: Moises Tapia\t" + Fore.RESET + Fore.LIGHTGREEN_EX + "Github: https://github.com/MoisesTapia/" + Fore.RESET)
-    print("""
-        How to use: \n
-          
-        python3 hackslabs.py --help
-          
-        usage: hackslabs.py [-h] [-z SIZE] [-mx MAXVM] [-mn MINVM] [-k KEYS]
-                  [-l LAUNCH] [--stop STOP] [-s START] [-t TERMINATE]
-                  [-ls LIST] [-in GETINFO]
-
-          """)
 
 awsargp = parsearguments()
 
@@ -249,9 +239,20 @@ AWSKEYPAIR  = awsargp.keys
 
 awsintances = Instance(AWSIMAGE, AWSTYPE, AWSMAX, AWSMIN, AWSKEYPAIR)
 
-main()
+if len(sys.argv) < 2:
+    print(
+    """
+    usage mode: hackslabs.py [-h] [-z SIZE] [-mx MAXVM] [-mn MINVM] [-k KEYS]
+                    [-l LAUNCH] [--stop STOP] [-s START] [-t TERMINATE]
+                    [-ls LIST] [-in GETINFO]
+
+    """
+    )
+    sys.exit(1)
+
 
 if awsargp.launch and awsargp.size and awsargp.maxvm and awsargp.minvm and awsargp.keys:
+    main()
     print(Fore.GREEN + "\n\t\t\t\tTable of Resume" + Fore.RESET)
     print(Fore.LIGHTGREEN_EX +  "\n\t\tsave this information if you want to stop or start your instance \n" + Fore.RESET)
     awsintances.runinstance()
