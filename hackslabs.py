@@ -14,45 +14,36 @@ RRED = Fore.LIGHTRED_EX
 CYYAN = RRED =Fore.LIGHTCYAN_EX
 RESETT = Fore.RESET
 
-#
-# ami-050184d2d97a1193f us-west-1
-# ami-0671b2fb0bfa2a568 us-east-2
-# https://github.com/infoslack/awesome-web-hacking
-#
-
 client = b3.client('ec2')
 
-
+amiregiosn = {
+    "us-west-1" : "ami-050184d2d97a1193f",
+    "us-east-2" : "ami-0671b2fb0bfa2a568"
+}
 
 parser = argp.ArgumentParser(
     description=__doc__, 
     formatter_class=argp.RawDescriptionHelpFormatter)
-
 parser.add_argument("-z", "--awstype", dest="size", 
                     help="""choose the sice of your vm in aws, types: 
                     t2.micro, t2.small, t2.medium, t2.large, t2.xlarge.
                     Remember visit aws.com to see the cost for each vm""")
-
 parser.add_argument("-mx", "--maxvm", dest="maxvm",
                     help="Max number of the same instances",
                     type=int)
-
 parser.add_argument("-mn", "--minvm", dest="minvm",
                     help="Min number of the same instances default 1",
                     default=1,
                     type=int)
-
 parser.add_argument( "-k", "--keypair", dest="keys",
                     default='KaliLinux',
                     help="Name of your Key Pair in AWS (ssh keys)")
-
 parser.add_argument("-l", "--launch",dest="launch",
                     default="aws",
                     help="""
                     This option requires the next attr:
                          --awstype, --maxvm, --minvm, --keypair
                     """)
-
 parser.add_argument("--stop", dest="stop",
                     help="Stop the instance or instances")
 parser.add_argument("-s", "--start", dest="start",
@@ -61,7 +52,6 @@ parser.add_argument("-t", "--terminate",dest="terminate",
                     type=str,
                     help="""
                     Terminate the instance or instances this option will delete the instances take care""")
-
 parser.add_argument("-ls", "--list", dest="list",
                     type=str,
                     default="vms",
@@ -218,6 +208,9 @@ class Instance:
 
 
 def main():
+    """
+    This is just the banner of script
+    """
     tprint('hAcksWlabS')
     print(Fore.GREEN + "\tBy: Moises Tapia\t" + RESETT + VERDE + "Github: https://github.com/MoisesTapia/" + RESETT)
 
