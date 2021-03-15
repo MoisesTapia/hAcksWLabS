@@ -7,11 +7,12 @@ import boto3 as b3
 import argparse as argp
 from art import *
 from colorama import Fore, init, Back, Style
+import botocore.exceptions
 import sys
 
 VERDE = Fore.LIGHTGREEN_EX
 RRED = Fore.LIGHTRED_EX
-CYYAN = RRED =Fore.LIGHTCYAN_EX
+CYYAN = Fore.LIGHTCYAN_EX
 RESETT = Fore.RESET
 
 client = b3.client('ec2')
@@ -59,8 +60,12 @@ parser.add_argument("-ls", "--list", dest="list",
 parser.add_argument("-in" , "--getinfo", dest="getinfo",
                     type=str,
                     default="vm",
-                    help="get info of your instance")
-
+                    help="get info of your instance lista all information writting: vm")
+parser.add_argument("-kg", "--keygen", dest="sshkeygen",
+                    type=str,
+                    default='KaliLinux',
+                    help="")
+                    
 
 class Instance:
     """
@@ -214,6 +219,25 @@ def main():
     tprint('hAcksWlabS')
     print(Fore.GREEN + "\tBy: Moises Tapia\t" + RESETT + VERDE + "Github: https://github.com/MoisesTapia/" + RESETT)
 
+
+def ssh_key_gen(keyssh):
+    keypair = client.create_key_pair(KeyName=keyssh)
+    
+    print("Name of the SSH Key: " + VERDE + keypair.get('KeyName') + RESETT)
+    print("Key Pair ID: " + RRED + keypair.get('KeyPairId') + RESETT)
+    
+    print("The Key Finger Print: " + CYYAN + str(keypair.get('KeyFingerprint')) + RESETT)
+    
+    print("Copy the next string inside of anywhere txt file: \n")
+    
+    print(CYYAN + keypair.get('KeyMaterial') + RESETT)
+    
+    print(RRED + "------" *10 + RESETT)
+   
+def describe_ssh_keys():
+    rep_describe = client.describe_key_pairs()
+    print(rep_describe)
+    
 awsargp = parser.parse_args()
 
 AWSIMAGE    = "ami-050184d2d97a1193f" 
@@ -239,16 +263,31 @@ if len(sys.argv) < 2:
 
 if awsargp.launch and awsargp.size and awsargp.maxvm and awsargp.minvm and awsargp.keys:
     main()
-    print(Fore.GREEN + "\n\t\t\t\tTable of Resume" + Fore.RESET)
-    print(Fore.LIGHTGREEN_EX +  "\n\t\tsave this information if you want to stop or start your instance \n" + Fore.RESET)
-    awsintances.runinstance()
-elif awsargp.start:
-    awsintances.start_instances(awsargp.start)
-elif awsargp.stop:
-    awsintances.stop_instances(awsargp.stop)
-elif awsargp.terminate:
+    try:
+        print(Fore.GREEN + "\n\t\t\t\tTable of Resume" + RESETT)
+        awsintances.runinstance()
+    except botocore.exceptions.ClientError as e:
+        if e.response['Error']['Code'] == 'InvalidKeyPair.NotFound':
+            print(RRED +  "\tSSH Keys not found, you need a key to connect to your instances" + RESETT)  
+
+
+if awsargp.start:
+    awsintances.start_instances(awsargp.start)    
+
+
+if awsargp.stop:
+    awsintances.stop_instances(awsargp.stop)  
+
+
+if awsargp.terminate:
     awsintances.terminate_instances(awsargp.terminate)
-elif awsargp.getinfo:
+  
+    
+if awsargp.getinfo:
     awsintances.getinfo_instances()
 
-    
+
+if awsargp.sshkeygen:
+    print(RRED + "\n\t\tGenerating your new SSH Key " + RESETT)
+    print("\tSave this key: \n")
+    ssh_key_gen(awsargp.sshkeygen)

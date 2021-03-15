@@ -5,7 +5,7 @@
 
 ## Tools and packages do you need
 
-- [X] awscli
+- [X] [awscli](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html)
 - [X] boto3
 - [X] argparse
 - [X] art
