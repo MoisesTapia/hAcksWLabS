@@ -23,47 +23,46 @@ amiregiosn = {
 }
 
 parser = argp.ArgumentParser(
-    description=__doc__, 
+    description=__doc__,
+    prog="hackslabs",
     formatter_class=argp.RawDescriptionHelpFormatter)
-parser.add_argument("-z", "--awstype", dest="size", 
-                    help="""choose the sice of your vm in aws, types: 
-                    t2.micro, t2.small, t2.medium, t2.large, t2.xlarge.
-                    Remember visit aws.com to see the cost for each vm""")
-parser.add_argument("-mx", "--maxvm", dest="maxvm",
-                    help="Max number of the same instances",
-                    type=int)
-parser.add_argument("-mn", "--minvm", dest="minvm",
-                    help="Min number of the same instances default 1",
-                    default=1,
-                    type=int)
-parser.add_argument( "-k", "--keypair", dest="keys",
-                    default='KaliLinux',
-                    help="Name of your Key Pair in AWS (ssh keys)")
-parser.add_argument("-l", "--launch",dest="launch",
-                    default="aws",
+
+launch_instance = parser.add_argument_group('Launch instance')
+launch_instance.add_argument("-l", "--launch",dest="launch",
+                    choices=("aws","gcp","azure"),
                     help="""
                     This option requires the next attr:
                          --awstype, --maxvm, --minvm, --keypair
                     """)
-parser.add_argument("--stop", dest="stop",
+launch_instance.add_argument("-z", "--awstype", dest="size", 
+                    help="""choose the sice of your vm in aws, types: 
+                    t2.micro, t2.small, t2.medium, t2.large, t2.xlarge.
+                    Remember visit aws.com to see the cost for each vm""")
+launch_instance.add_argument("-mx", "--maxvm", dest="maxvm",
+                    help="Max number of the same instances",
+                    type=int)
+launch_instance.add_argument("-mn", "--minvm", dest="minvm",
+                    help="Min number of the same instances default 1",
+                    type=int)
+launch_instance.add_argument( "-k", "--keypair", dest="keys",
+                    help="Name of your Key Pair in AWS (ssh keys)")
+
+instances_state = parser.add_argument_group('State of instance')
+instances_state.add_argument("--stop", dest="stop",
                     help="Stop the instance or instances")
-parser.add_argument("-s", "--start", dest="start",
+instances_state.add_argument("-s", "--start", dest="start",
                     help="Start the instance or instances")
-parser.add_argument("-t", "--terminate",dest="terminate",
+instances_state.add_argument("-t", "--terminate",dest="terminate",
                     type=str,
                     help="""
                     Terminate the instance or instances this option will delete the instances take care""")
-parser.add_argument("-ls", "--list", dest="list",
+
+otheropt = parser.add_argument_group('Other Options')
+otheropt.add_argument("-in" , "--getinfo", dest="getinfo",
                     type=str,
-                    default="vms",
-                    help="list all instances in your account")
-parser.add_argument("-in" , "--getinfo", dest="getinfo",
-                    type=str,
-                    default="vm",
                     help="get info of your instance lista all information writting: vm")
-parser.add_argument("-kg", "--keygen", dest="sshkeygen",
+otheropt.add_argument("-kg", "--keygen", dest="sshkeygen",
                     type=str,
-                    default='KaliLinux',
                     help="")
                     
 
@@ -78,6 +77,15 @@ class Instance:
     """
 
     def __init__(self, imageid, instancetype, maxcount, mincount, keypair):
+        """[summary]
+
+        Args:
+            imageid ([type]): [description]
+            instancetype ([type]): [description]
+            maxcount ([type]): [description]
+            mincount ([type]): [description]
+            keypair ([type]): [description]
+        """
 
         self.imageid        =   imageid
         self.instancetype   =   instancetype
@@ -181,8 +189,6 @@ class Instance:
                     print("Group name: {}".format(info['Placement']['GroupName']))
                     print("Tenancy: {}".format(info['Placement']['Tenancy']  + "\n"))
         
-        #print(resp)
-        
         print(RRED + "------" *6 + RESETT)
         
         print(VERDE + "\n\t\tPublic options\n"  + RESETT)
@@ -246,8 +252,11 @@ AWSMAX      = awsargp.maxvm
 AWSMIN      = awsargp.minvm
 AWSKEYPAIR  = awsargp.keys
 
-
 awsintances = Instance(AWSIMAGE, AWSTYPE, AWSMAX, AWSMIN, AWSKEYPAIR)
+
+
+
+#print(awsargp)
 
 if len(sys.argv) < 2:
     print(Fore.LIGHTGREEN_EX + 
@@ -260,7 +269,6 @@ if len(sys.argv) < 2:
      + RESETT)
     sys.exit(1)
 
-
 if awsargp.launch and awsargp.size and awsargp.maxvm and awsargp.minvm and awsargp.keys:
     main()
     try:
@@ -269,25 +277,15 @@ if awsargp.launch and awsargp.size and awsargp.maxvm and awsargp.minvm and awsar
     except botocore.exceptions.ClientError as e:
         if e.response['Error']['Code'] == 'InvalidKeyPair.NotFound':
             print(RRED +  "\tSSH Keys not found, you need a key to connect to your instances" + RESETT)  
-
-
-if awsargp.start:
-    awsintances.start_instances(awsargp.start)    
-
-
-if awsargp.stop:
-    awsintances.stop_instances(awsargp.stop)  
-
-
-if awsargp.terminate:
-    awsintances.terminate_instances(awsargp.terminate)
-  
-    
-if awsargp.getinfo:
+elif awsargp.start:
+    awsintances.start_instances(awsargp.start)
+elif awsargp.stop:
+    awsintances.stop_instances(awsargp.stop)
+elif awsargp.terminate:
+    awsintances.terminate_instances(awsargp.terminate)    
+elif awsargp.getinfo:
     awsintances.getinfo_instances()
-
-
-if awsargp.sshkeygen:
+elif awsargp.sshkeygen:
     print(RRED + "\n\t\tGenerating your new SSH Key " + RESETT)
     print("\tSave this key: \n")
     ssh_key_gen(awsargp.sshkeygen)
