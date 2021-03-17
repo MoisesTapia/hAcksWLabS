@@ -175,12 +175,16 @@ class Instance:
     
     @staticmethod
     def getinfo_instances():
-        resp = client.describe_instances()
+        resp = client.describe_instances(Filters=[{
+            'Name':'instance-state-name',
+            'Values': ['running']
+        }])
+        
+        print(resp)
         
         tprint('Resume')
         
         print(CYYAN + "\n\t\tList of Instances\n"+ RESETT)
-        resp = client.describe_instances()
 
         for reservation in resp['Reservations']:
             for instances in reservation['Instances']:
@@ -204,12 +208,12 @@ class Instance:
                     print("Availability Zone: {}".format(info2['Placement']['AvailabilityZone']))
                     print("Group name: {}".format(info2['Placement']['GroupName']))
                     print("Tenancy: {}".format(info2['Placement']['Tenancy']  + "\n"))
+
         
-        print(RRED + "------" *6 + RESETT)
-        
-        print(VERDE + "\n\t\tPublic options\n"  + RESETT)
         for publicinfo in resp['Reservations']:
             for pbl in publicinfo['Instances']:
+                print(RRED + "------" *6 + RESETT)
+                print(VERDE + "\n\t\tPublic options\n"  + RESETT)
                 print("Your Public DNSname: " + VERDE + pbl['PublicDnsName'] + RESETT )
                 print("Your Public IP: " + VERDE + pbl['PublicIpAddress']  + RESETT )
                 print("Your Arch: {}".format(pbl['Architecture']))
