@@ -1,10 +1,13 @@
 language: python
 sudo: required
 python:
-  - "3.6"
+  - "3.7.3"
 install:
   - pip install -r requirements.txt
 script:
+  - mkdir .aws/
+  - cd .aws && touch credentials config
+  - echo "[default]\nregion=us-east-1" >> config
   - chmod 777 hackslabs.py
   - python3 hackslabs.py -h
   - python3 hackslabs.py --help

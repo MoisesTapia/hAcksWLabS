@@ -343,4 +343,4 @@ elif awsargp.sshkeygen:
     print("\tSave this key: \n")
     ssh_key_gen(awsargp.sshkeygen)
 elif awsargp.awsdescribe:
-    describe_ssh_keys() 
+    describe_ssh_keys()
