@@ -8,6 +8,7 @@ script:
   - mkdir .aws/
   - cd .aws && touch credentials config
   - echo "[default]\nregion=us-east-1" >> config
+  - cd
   - chmod 777 hackslabs.py
   - python3 hackslabs.py -h
   - python3 hackslabs.py --help
