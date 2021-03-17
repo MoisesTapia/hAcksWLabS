@@ -3,3 +3,4 @@ colorama==0.4.3
 argparse==1.4.0
 boto3==1.17.25
 awscli==1.19.27
+rsa>=4.7 # not directly required, pinned by Snyk to avoid a vulnerability
