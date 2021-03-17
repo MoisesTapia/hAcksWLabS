@@ -11,12 +11,18 @@
 - [X] boto3
 - [X] argparse
 - [X] art
-- [X] colorama
 
 ```bash
 python3 pip3 -r install requeriments.txt
 ```
 
+## Help
+
+![help](img/menu01.png)
+
+## SSH KEYS example
+
+![ssh](img/sshkeys.png)
 ## How to use
 
 After installing boto3
@@ -42,11 +48,11 @@ region=us-east-1
 
 
 ```bash
-➜  hAckWsLabS ✗ python3 awsinstance.py --help
-usage: awsinstance.py [-h] [--awstype SIZE] [--maxvm MAXVM] [--minvm MINVM]
-                      [--keypair KEYS] [--launch LAUNCH] [--stop STOP]
-                      [--start START] [--terminate TERMINATE]
-                      [--restart RESTART]
+➜  hAckWsLabS git:(main) ✗ python3 hackslabs.py -h      
+usage: hackslabs [-h] [-l {aws,gcp,azure}] [-z SIZE] [-mx MAXVM] [-mn MINVM]
+                 [-k KEYS] [--stop STOP] [-s START] [-t TERMINATE]
+                 [-in GETINFO] [-kg SSHKEYGEN] [-ds AWSDESCRIBE] [-v]
+
 ```
 ## Example
 ```bash
@@ -65,7 +71,9 @@ python3 hackslabs.py -l aws -z t2.micro -mx 1 -mn 1 -k KaliLinux
 |          |   --stop      |  Stop instances        |
 |   -s     |   --start     |  Start instances       |
 |   -t     |   --terminate |  Terminate instances   |
-
+|   -in    |   --getinfo   |  all information of vm |
+|   -v     |   --version   |  get version of script |
+|   -ds    |   --describe  |  get info of sshkeys   |
 ## [Amazon EC2 Instance Types](https://aws.amazon.com/ec2/instance-types/?nc1=h_ls)
 
 |  Instance   |     vCPU*     |  CPU Credits / hour | Mem GiB|  Storage  | Network Performance |
@@ -82,7 +90,7 @@ python3 hackslabs.py -l aws -z t2.micro -mx 1 -mn 1 -k KaliLinux
 ## Use docker to deploy this tool
 
 ```bash
-docker build -t hackslabs:1.0.0
+docker build -t hackslabs:0.1.0 .
 ```
 ## Run the docker container
 

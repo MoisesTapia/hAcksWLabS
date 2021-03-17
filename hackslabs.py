@@ -94,7 +94,6 @@ class Instance:
 
     def __init__(self, imageid, instancetype, maxcount, mincount, keypair):
         """[summary]
-
         Args:
             imageid ([type]): [description]
             instancetype ([type]): [description]
@@ -111,7 +110,6 @@ class Instance:
     
     def runinstance(self):
         """[summary]
-
         Returns:
             [dict]: [return the response of aws]
         """
@@ -150,7 +148,6 @@ class Instance:
     
     def start_instances(self, instanceid):
         """[summary]
-
         Args:
             instanceid ([string]): [start the instances in aws]
         """
@@ -165,7 +162,6 @@ class Instance:
         
     def stop_instances(self,instanceid):
         """[summary]
-
         Args:
             instanceid ([str]): [stop the instance in aws]
         """
@@ -181,7 +177,6 @@ class Instance:
             
     def terminate_instances(self,instanceid):
         """[summary]
-
         Args:
             instanceid ([str]): [terminate the instance in aws, this function delete de instance take care]
         """
@@ -271,7 +266,6 @@ def main():
 
 def ssh_key_gen(keyssh):
     """[summary]
-
     Args:
         keyssh ([str]): [create a new ssh keys in aws]
     """
@@ -289,9 +283,7 @@ def ssh_key_gen(keyssh):
     print(RRED + "------" *10 + RESETT)
    
 def describe_ssh_keys():
-    """
-    get the all information about ssh keys stored in aws
-    """
+    """get the all information about ssh keys stored in aws"""
     rep_describe = client.describe_key_pairs()
     # print(rep_describe) debugging response
     
