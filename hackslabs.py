@@ -173,7 +173,8 @@ class Instance:
             print("Code: {}".format(instances['CurrentState']['Code']))
             print("Status: " + CYYAN + instances['CurrentState']['Name'] + RESETT)
     
-    def getinfo_instances(self):
+    @staticmethod
+    def getinfo_instances():
         resp = client.describe_instances()
         
         tprint('Resume')
