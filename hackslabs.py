@@ -6,7 +6,7 @@
 import boto3 as b3
 import argparse as argp
 from art import tprint
-from colorama import Fore, init, Back, Style
+from colorama import Fore
 import botocore.exceptions
 import sys
 
@@ -21,10 +21,10 @@ RESETT = Fore.RESET
 
 client = b3.client('ec2')
 
-amiregiosn = {
-    "us-west-1" : "ami-050184d2d97a1193f",
-    "us-east-2" : "ami-0671b2fb0bfa2a568"
-}
+#amiregiosn = {
+#    "us-west-1" : "ami-050184d2d97a1193f",
+#    "us-east-2" : "ami-0671b2fb0bfa2a568"
+#}
 
 parser = argp.ArgumentParser(
     description=__doc__,
@@ -110,6 +110,11 @@ class Instance:
         self.keypair        =   keypair
     
     def runinstance(self):
+        """[summary]
+
+        Returns:
+            [dict]: [return the response of aws]
+        """
         resp = client.run_instances(
             ImageId = self.imageid,
             InstanceType = self.instancetype,
@@ -144,6 +149,11 @@ class Instance:
         return resp
     
     def start_instances(self, instanceid):
+        """[summary]
+
+        Args:
+            instanceid ([string]): [start the instances in aws]
+        """
         self.instanceid = instanceid 
         print("The next instance will be available in a few minutes")
         aws_start = client.start_instances(InstanceIds=[self.instanceid])
@@ -154,6 +164,11 @@ class Instance:
             print("State ID: {}".format(instances['CurrentState']['Name']))
         
     def stop_instances(self,instanceid):
+        """[summary]
+
+        Args:
+            instanceid ([str]): [stop the instance in aws]
+        """
         self.instanceid = instanceid
         print("The next instance will be stop for few seconds: {}".format(self.instanceid))
         
@@ -165,6 +180,11 @@ class Instance:
             print("Code: {}".format(instances['CurrentState']['Name']))
             
     def terminate_instances(self,instanceid):
+        """[summary]
+
+        Args:
+            instanceid ([str]): [terminate the instance in aws, this function delete de instance take care]
+        """
         self.instanceid = instanceid
         aws_terminate = client.terminate_instances(InstanceIds=[self.instanceid])
         
@@ -175,6 +195,11 @@ class Instance:
     
     @staticmethod
     def getinfo_instances():
+        '''
+        With the boto3 library we can get the irrelevant information like:
+            ipaddress, device, name, privatedns and other attributes 
+        in this function i am recolect all information or the most important  information.
+        '''
         resp = client.describe_instances(Filters=[{
             'Name':'instance-state-name',
             'Values': ['running']
@@ -238,12 +263,18 @@ class Instance:
 
 def main():
     """
-    This is just the banner of script
+    This is just the banner of script.
+    Welcome banner
     """
     tprint('hAcksWlabS')
     print(Fore.GREEN + "\tBy: Moises Tapia\t" + RESETT + VERDE + "Github: https://github.com/MoisesTapia/" + RESETT)
 
 def ssh_key_gen(keyssh):
+    """[summary]
+
+    Args:
+        keyssh ([str]): [create a new ssh keys in aws]
+    """
     keypair = client.create_key_pair(KeyName=keyssh)
     
     print("Name of the SSH Key: " + VERDE + keypair.get('KeyName') + RESETT)
