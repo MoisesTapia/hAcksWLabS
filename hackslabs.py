@@ -5,15 +5,19 @@
 
 import boto3 as b3
 import argparse as argp
-from art import *
+from art import tprint
 from colorama import Fore, init, Back, Style
 import botocore.exceptions
 import sys
 
 VERDE = Fore.LIGHTGREEN_EX
 RRED = Fore.LIGHTRED_EX
+YELLOW = Fore.LIGHTYELLOW_EX
 CYYAN = Fore.LIGHTCYAN_EX
 RESETT = Fore.RESET
+
+
+
 
 client = b3.client('ec2')
 
@@ -63,8 +67,10 @@ otheropt.add_argument("-in" , "--getinfo", dest="getinfo",
                     help="get info of your instance lista all information writting: vm")
 otheropt.add_argument("-kg", "--keygen", dest="sshkeygen",
                     type=str,
-                    help="")
-                    
+                    help="This option can generate a ssh key in aws, and return information that you need save")
+otheropt.add_argument("-ds", "--describe", dest="awsdescribe",
+                      type=str,
+                      help="")                  
 
 class Instance:
     """
@@ -184,10 +190,9 @@ class Instance:
         
         for getinfo2 in resp['Reservations']:
             for info2 in getinfo2['Instances']:
-                
                     print("Availability Zone: {}".format(info2['Placement']['AvailabilityZone']))
-                    print("Group name: {}".format(info['Placement']['GroupName']))
-                    print("Tenancy: {}".format(info['Placement']['Tenancy']  + "\n"))
+                    print("Group name: {}".format(info2['Placement']['GroupName']))
+                    print("Tenancy: {}".format(info2['Placement']['Tenancy']  + "\n"))
         
         print(RRED + "------" *6 + RESETT)
         
@@ -215,8 +220,6 @@ class Instance:
                     for keys, values in dbnm['Ebs'].items():
                         print(keys + " : " + str(values))
                         print(Fore.LIGHTCYAN_EX + "------" *5 + Fore.RESET)
-    
-
 
 def main():
     """
@@ -224,7 +227,6 @@ def main():
     """
     tprint('hAcksWlabS')
     print(Fore.GREEN + "\tBy: Moises Tapia\t" + RESETT + VERDE + "Github: https://github.com/MoisesTapia/" + RESETT)
-
 
 def ssh_key_gen(keyssh):
     keypair = client.create_key_pair(KeyName=keyssh)
@@ -241,8 +243,21 @@ def ssh_key_gen(keyssh):
     print(RRED + "------" *10 + RESETT)
    
 def describe_ssh_keys():
+    """
+    get the all information about ssh keys stored in aws
+    """
     rep_describe = client.describe_key_pairs()
-    print(rep_describe)
+    # print(rep_describe) debugging response
+    
+    tprint('SSH Keys')
+    print("-------------------------" * 3 + "\n")
+    
+    for key in rep_describe['KeyPairs']:
+        print(YELLOW + "\t\t Information of Key \n" + RESETT)
+        print("Key Fingerprint: " + RRED + str(key['KeyName']) + RESETT)
+        print("Key ID: " + VERDE + str(key['KeyPairId']) + RESETT)
+        print("Key Fingerprint: " + CYYAN + str(key['KeyFingerprint']) + RESETT)
+        print("-------------------------" * 3 + "\n")       
     
 awsargp = parser.parse_args()
 
@@ -289,3 +304,5 @@ elif awsargp.sshkeygen:
     print(RRED + "\n\t\tGenerating your new SSH Key " + RESETT)
     print("\tSave this key: \n")
     ssh_key_gen(awsargp.sshkeygen)
+elif awsargp.awsdescribe:
+    describe_ssh_keys()
