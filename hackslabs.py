@@ -190,11 +190,11 @@ class Instance:
     
     @staticmethod
     def getinfo_instances():
-        '''
+        """
         With the boto3 library we can get the irrelevant information like:
             ipaddress, device, name, privatedns and other attributes 
         in this function i am recolect all information or the most important  information.
-        '''
+        """
         resp = client.describe_instances(Filters=[{
             'Name':'instance-state-name',
             'Values': ['running']
