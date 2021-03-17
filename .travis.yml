@@ -5,12 +5,15 @@ python:
 install:
   - pip install -r requirements.txt
 script:
+  - pwd
+  - cd /home/
   - mkdir .aws/
   - cd .aws && touch credentials config
   - echo "[default]" > config
   - echo "region=us-east-1" >> config
   - cat config
   - cd ..
+  - cd MoisesTapia/hAcksWLabS
   - chmod 777 hackslabs.py
   - python3 hackslabs.py -h
   - python3 hackslabs.py --help
