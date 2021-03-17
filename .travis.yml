@@ -8,3 +8,5 @@ script:
   - chmod 777 hackslabs.py
   - python3 hackslabs.py -h
   - python3 hackslabs.py --help
+  - python3 hackslabs.py --version
+  - python3 hackslabs.py -version

@@ -29,7 +29,13 @@ amiregiosn = {
 parser = argp.ArgumentParser(
     description=__doc__,
     prog="hackslabs",
-    formatter_class=argp.RawDescriptionHelpFormatter)
+    formatter_class=argp.RawDescriptionHelpFormatter,
+    epilog='''
+    The purpose of this script is to be able to start an instance of Kali linux in AWS 
+    in which we can perform security tests in controlled environments.
+    I am not responsible for the misuse that can be given to this script, 
+    remember that any unauthorized computer attack is considered a cyber crime
+    ''')
 
 launch_instance = parser.add_argument_group('Launch instance')
 launch_instance.add_argument("-l", "--launch",dest="launch",
@@ -70,8 +76,12 @@ otheropt.add_argument("-kg", "--keygen", dest="sshkeygen",
                     help="This option can generate a ssh key in aws, and return information that you need save")
 otheropt.add_argument("-ds", "--describe", dest="awsdescribe",
                       type=str,
-                      help="")                  
+                      help="Return all ssh keys stored in your AWS account")                  
 
+versions = parser.add_argument_group('version of script')
+versions.add_argument("-v", "--version",
+                      version='%(prog)s 0.1.0',
+                      action='version')
 class Instance:
     """
     In this class we define the basic functions of EC2 instances like:
@@ -262,7 +272,7 @@ def describe_ssh_keys():
 awsargp = parser.parse_args()
 
 AWSIMAGE    = "ami-050184d2d97a1193f" 
-AWSTYPE     = awsargp.size # t2.medium
+AWSTYPE     = awsargp.size 
 AWSMAX      = awsargp.maxvm
 AWSMIN      = awsargp.minvm
 AWSKEYPAIR  = awsargp.keys
@@ -271,7 +281,7 @@ awsintances = Instance(AWSIMAGE, AWSTYPE, AWSMAX, AWSMIN, AWSKEYPAIR)
 
 
 
-#print(awsargp)
+#print(awsargp) debugging argparse commands
 
 if len(sys.argv) < 2:
     print(Fore.LIGHTGREEN_EX + 
@@ -305,4 +315,4 @@ elif awsargp.sshkeygen:
     print("\tSave this key: \n")
     ssh_key_gen(awsargp.sshkeygen)
 elif awsargp.awsdescribe:
-    describe_ssh_keys()
+    describe_ssh_keys() 
