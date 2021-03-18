@@ -1,21 +1,13 @@
 language: python
 sudo: required
-python:
-  - "3.7.3"
-install:
-  - pip install -r requirements.txt
+services:
+  - docker
+
+before_install:
+  - docker build -t hackslabs:0.1.0 .
+  - docker run -dti --name awshacks hackslabs:0.1.0 /bin/bash
+  - docker ps
+
+
 script:
-  - pwd
-  - cd /home/
-  - mkdir .aws/
-  - cd .aws && touch credentials config
-  - echo "[default]" > config
-  - echo "region=us-east-1" >> config
-  - cat config
-  - cd ..
-  - cd MoisesTapia/hAcksWLabS
-  - chmod 777 hackslabs.py
-  - python3 hackslabs.py -h
-  - python3 hackslabs.py --help
-  - python3 hackslabs.py --version
-  - python3 hackslabs.py -version
+  - docker exec -ti awshacks python3 hackslabs.py --help
