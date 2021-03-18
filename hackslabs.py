@@ -16,15 +16,13 @@ YELLOW = Fore.LIGHTYELLOW_EX
 CYYAN = Fore.LIGHTCYAN_EX
 RESETT = Fore.RESET
 
-
-
-
 client = b3.client('ec2')
 
 #amiregiosn = {
 #    "us-west-1" : "ami-050184d2d97a1193f",
 #    "us-east-2" : "ami-0671b2fb0bfa2a568"
 #}
+
 
 parser = argp.ArgumentParser(
     description=__doc__,
@@ -36,6 +34,8 @@ parser = argp.ArgumentParser(
     I am not responsible for the misuse that can be given to this script, 
     remember that any unauthorized computer attack is considered a cyber crime
     ''')
+
+
 
 launch_instance = parser.add_argument_group('Launch instance')
 launch_instance.add_argument("-l", "--launch",dest="launch",
@@ -57,6 +57,8 @@ launch_instance.add_argument("-mn", "--minvm", dest="minvm",
 launch_instance.add_argument( "-k", "--keypair", dest="keys",
                     help="Name of your Key Pair in AWS (ssh keys)")
 
+
+
 instances_state = parser.add_argument_group('State of instance')
 instances_state.add_argument("--stop", dest="stop",
                     help="Stop the instance or instances")
@@ -67,6 +69,8 @@ instances_state.add_argument("-t", "--terminate",dest="terminate",
                     help="""
                     Terminate the instance or instances this option will delete the instances take care""")
 
+
+
 otheropt = parser.add_argument_group('Other Options')
 otheropt.add_argument("-in" , "--getinfo", dest="getinfo",
                     type=str,
@@ -75,13 +79,66 @@ otheropt.add_argument("-kg", "--keygen", dest="sshkeygen",
                     type=str,
                     help="This option can generate a ssh key in aws, and return information that you need save")
 otheropt.add_argument("-ds", "--describe", dest="awsdescribe",
-                      type=str,
-                      help="Return all ssh keys stored in your AWS account")                  
+                      type=str,help="Return all ssh keys stored in your AWS account")                  
+
+
+
+instance_status = parser.add_argument_group('Filter Instances for')
+instance_status.add_argument("-sr", "--runnig", dest="running",
+                             help="", type=str)
+instance_status.add_argument("-st", "--terminated", dest="terminated",
+                             help="", type=str)
+instance_status.add_argument("-sp", "--pending", dest="pending",
+                             help="", type=str)
+instance_status.add_argument("-se", "--stopped", dest="stopped",
+                             help="", type=str)
+
 
 versions = parser.add_argument_group('version of script')
 versions.add_argument("-v", "--version",
                       version='%(prog)s 0.1.0',
                       action='version')
+
+
+
+
+
+class InstaceState():
+    """[summary]This contain all functions that we need to do to get all information
+    about instances.
+    """
+
+    @staticmethod
+    def state_running():
+        resp_run = client.describe_instances(Filters=[{
+            'Name':'instance-state-name',
+            'Values': ['running']
+        }])
+    
+    
+    @staticmethod
+    def state_stopped():
+        resp_stopped = client.describe_instances(Filters=[{
+            'Name':'instance-state-name',
+            'Values': ['stopped']
+        }])
+        
+        
+    @staticmethod
+    def state_pending():
+        resp_pending = client.describe_instances(Filters=[{
+            'Name':'instance-state-name',
+            'Values': ['pending']
+        }])  
+    
+    @staticmethod
+    def state_terminated():
+        resp_terminated = client.describe_instances(Filters=[{
+            'Name':'instance-state-name',
+            'Values': ['terminated']
+        }])
+        
+        
 class Instance:
     """
     In this class we define the basic functions of EC2 instances like:
@@ -200,7 +257,7 @@ class Instance:
             'Values': ['running']
         }])
         
-        print(resp)
+        #print(resp)
         
         tprint('Resume')
         
@@ -297,6 +354,7 @@ def describe_ssh_keys():
         print("Key Fingerprint: " + CYYAN + str(key['KeyFingerprint']) + RESETT)
         print("-------------------------" * 3 + "\n")       
     
+
 awsargp = parser.parse_args()
 
 AWSIMAGE    = "ami-050184d2d97a1193f" 
@@ -304,6 +362,7 @@ AWSTYPE     = awsargp.size
 AWSMAX      = awsargp.maxvm
 AWSMIN      = awsargp.minvm
 AWSKEYPAIR  = awsargp.keys
+
 
 awsintances = Instance(AWSIMAGE, AWSTYPE, AWSMAX, AWSMIN, AWSKEYPAIR)
 
@@ -314,13 +373,27 @@ awsintances = Instance(AWSIMAGE, AWSTYPE, AWSMAX, AWSMIN, AWSKEYPAIR)
 if len(sys.argv) < 2:
     print(Fore.LIGHTGREEN_EX + 
     """
-    usage mode: hackslabs.py [-h] [-z SIZE] [-mx MAXVM] [-mn MINVM] [-k KEYS]
+    basic commands: hackslabs.py [-h] [-z SIZE] [-mx MAXVM] [-mn MINVM] [-k KEYS]
                     [-l LAUNCH] [--stop STOP] [-s START] [-t TERMINATE]
                     [-ls LIST] [-in GETINFO]
-
     """
      + RESETT)
+    
+    print(CYYAN + 
+        """
+        Usage Mode:
+            Launch Instances:
+            python3 hackslabs.py -l aws -z t2.micro -mx 1 -mn 1 -k KaliLinux
+            
+            Get help:
+            python3 hackslabs.py --help/-h
+            
+            termibate instances 
+            python3 hackslabs.py --terminate/t <id_instances>
+        """ + RESETT)
+    
     sys.exit(1)
+
 
 if awsargp.launch and awsargp.size and awsargp.maxvm and awsargp.minvm and awsargp.keys:
     main()
