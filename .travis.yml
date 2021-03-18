@@ -5,9 +5,8 @@ services:
 
 before_install:
   - docker build -t hackslabs:0.1.0 .
-  - docker run -dti --name awshacks hackslabs:0.1.0 /bin/bash
+  - docker run -dti --name awshacks hackslabs:0.1.0
   - docker ps
-
-
+  
 script:
   - docker exec -ti awshacks python3 hackslabs.py --help
