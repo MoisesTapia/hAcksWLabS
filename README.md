@@ -75,6 +75,10 @@ python3 hackslabs.py -l aws -z t2.micro -mx 1 -mn 1 -k KaliLinux
 |   -in    |   --getinfo   |  all information of vm |
 |   -v     |   --version   |  get version of script |
 |   -ds    |   --describe  |  get info of sshkeys   |
+|   -ds    | --intances-types|  get info instances and types |
+
+
+
 ## [Amazon EC2 Instance Types](https://aws.amazon.com/ec2/instance-types/?nc1=h_ls)
 
 |  Instance   |     vCPU*     |  CPU Credits / hour | Mem GiB|  Storage  | Network Performance |
@@ -85,7 +89,7 @@ python3 hackslabs.py -l aws -z t2.micro -mx 1 -mn 1 -k KaliLinux
 |  t2.medium  |       2       |           24        |    4   |  EBS-Only |   Low to Moderate   |
 |  t2.large   |       2       |           36        |    8   |  EBS-Only |   Low to Moderate   |
 |  t2.xlarge  |       4       |           54        |    16  |  EBS-Only |      Moderate       |
-|  t2.medium  |       8       |           81        |    32  |  EBS-Only |      Moderate       |
+|  t2.2xlarge |       8       |           81        |    32  |  EBS-Only |      Moderate       |
 
 
 ## Use docker to deploy this tool

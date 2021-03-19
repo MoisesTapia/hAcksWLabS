@@ -5,18 +5,23 @@
 
 import boto3 as b3
 import argparse as argp
+from argparse_color_formatter import ColorHelpFormatter
+from rich.console import Console
+from rich.table import Column, Table
 from art import tprint
 from colorama import Fore
 import botocore.exceptions
 import sys
 
 VERDE = Fore.LIGHTGREEN_EX
+BBLUE = Fore.LIGHTBLUE_EX
 RRED = Fore.LIGHTRED_EX
 YELLOW = Fore.LIGHTYELLOW_EX
 CYYAN = Fore.LIGHTCYAN_EX
 RESETT = Fore.RESET
 
 client = b3.client('ec2')
+console = Console()
 
 #amiregiosn = {
 #    "us-west-1" : "ami-050184d2d97a1193f",
@@ -27,7 +32,7 @@ client = b3.client('ec2')
 parser = argp.ArgumentParser(
     description=__doc__,
     prog="hackslabs",
-    formatter_class=argp.RawDescriptionHelpFormatter,
+    formatter_class=ColorHelpFormatter, #argp.RawDescriptionHelpFormatter
     epilog='''
     The purpose of this script is to be able to start an instance of Kali linux in AWS 
     in which we can perform security tests in controlled environments.
@@ -38,20 +43,20 @@ parser = argp.ArgumentParser(
 
 
 launch_instance = parser.add_argument_group('Launch instance')
-launch_instance.add_argument("-l", "--launch",dest="launch",
+launch_instance.add_argument("-l", "--launch",   dest="launch",
                     choices=("aws","gcp","azure"),
                     help="""
                     This option requires the next attr:
                          --awstype, --maxvm, --minvm, --keypair
                     """)
-launch_instance.add_argument("-z", "--awstype", dest="size", 
+launch_instance.add_argument("-z", "--awstype",  dest="size", 
                     help="""choose the sice of your vm in aws, types: 
                     t2.micro, t2.small, t2.medium, t2.large, t2.xlarge.
                     Remember visit aws.com to see the cost for each vm""")
-launch_instance.add_argument("-mx", "--maxvm", dest="maxvm",
+launch_instance.add_argument("-mx", "--maxvm",   dest="maxvm",
                     help="Max number of the same instances",
                     type=int)
-launch_instance.add_argument("-mn", "--minvm", dest="minvm",
+launch_instance.add_argument("-mn", "--minvm",   dest="minvm",
                     help="Min number of the same instances default 1",
                     type=int)
 launch_instance.add_argument( "-k", "--keypair", dest="keys",
@@ -60,14 +65,34 @@ launch_instance.add_argument( "-k", "--keypair", dest="keys",
 
 
 instances_state = parser.add_argument_group('State of instance')
-instances_state.add_argument("--stop", dest="stop",
+instances_state.add_argument("--stop",            dest="stop",
                     help="Stop the instance or instances")
-instances_state.add_argument("-s", "--start", dest="start",
+instances_state.add_argument("-s", "--start",     dest="start",
                     help="Start the instance or instances")
-instances_state.add_argument("-t", "--terminate",dest="terminate",
+instances_state.add_argument("-t", "--terminate", dest="terminate",
                     type=str,
                     help="""
                     Terminate the instance or instances this option will delete the instances take care""")
+
+
+instance_status = parser.add_argument_group('Filter Instances for')
+instance_status.add_argument("-sr", "--state-runnig", dest="running",
+                             help="Return a list of the instances with status running", type=str)
+instance_status.add_argument("-st", "--state-terminated", dest="terminated",
+                             help="Return a list of the instances with status terminated", type=str)
+instance_status.add_argument("-sp", "--state-pending", dest="pending",
+                             help="Return a list of the instances with status pending", type=str)
+instance_status.add_argument("-se", "--state-stopped", dest="stopped",
+                             help="Return a list of the instances with status stopped", type=str)
+
+
+versions = parser.add_argument_group('version of script')
+versions.add_argument("-v", "--version",
+                      version='%(prog)s 0.1.0',
+                      action='version')
+versions.add_argument("-at","--author", dest="authors",
+                      type=str,
+                      help="Information about the author")
 
 
 
@@ -80,25 +105,12 @@ otheropt.add_argument("-kg", "--keygen", dest="sshkeygen",
                     help="This option can generate a ssh key in aws, and return information that you need save")
 otheropt.add_argument("-ds", "--describe", dest="awsdescribe",
                       type=str,help="Return all ssh keys stored in your AWS account")                  
-
-
-
-instance_status = parser.add_argument_group('Filter Instances for')
-instance_status.add_argument("-sr", "--runnig", dest="running",
-                             help="", type=str)
-instance_status.add_argument("-st", "--terminated", dest="terminated",
-                             help="", type=str)
-instance_status.add_argument("-sp", "--pending", dest="pending",
-                             help="", type=str)
-instance_status.add_argument("-se", "--stopped", dest="stopped",
-                             help="", type=str)
-
-
-versions = parser.add_argument_group('version of script')
-versions.add_argument("-v", "--version",
-                      version='%(prog)s 0.1.0',
-                      action='version')
-
+otheropt.add_argument("-kn", "--key-name", dest="kgname",
+                      type=str,
+                      help="Name of the file where the will be save it, by default is saved without extension")
+otheropt.add_argument("-it", "--intances-types",dest="inatnces",
+                      type=str,
+                      help="Show the table of instances")
 
 
 
@@ -110,34 +122,59 @@ class InstaceState():
 
     @staticmethod
     def state_running():
-        resp_run = client.describe_instances(Filters=[{
-            'Name':'instance-state-name',
-            'Values': ['running']
-        }])
-    
+        #resp_run = client.describe_instances(Filters=[{
+        #    'Name':'instance-state-name',
+        #    'Values': ['running']
+        #}])
+        
+        tprint('Runnung')
     
     @staticmethod
     def state_stopped():
-        resp_stopped = client.describe_instances(Filters=[{
-            'Name':'instance-state-name',
-            'Values': ['stopped']
-        }])
+        #resp_stopped = client.describe_instances(Filters=[{
+        #    'Name':'instance-state-name',
+        #    'Values': ['stopped']
+        #}])
         
-        
+        tprint('Stopped')
+
+        #for reservation in resp_stopped['Reservations']:
+        #    for stoppped in reservation['Instances']:
+        #        print("Instance ID: {}" + VERDE + stoppped['InstanceId'] + RESETT)
+        #        print("Time: " + VERDE +  stoppped['LaunchTime'] + RESETT)
+        #        print("Availability Zone: " + VERDE + stoppped['Placement']['AvailabilityZone'] + RESETT)
+
     @staticmethod
     def state_pending():
-        resp_pending = client.describe_instances(Filters=[{
-            'Name':'instance-state-name',
-            'Values': ['pending']
-        }])  
-    
+        #resp_pending = client.describe_instances(Filters=[{
+        #    'Name':'instance-state-name',
+        #    'Values': ['pending']
+        #}])
+        
+        tprint('Pending')
+        
+        #for reservation in resp_pending['Reservations']:
+        #    for pendingin in reservation['Instances']:
+        #        print("Instance ID: {}" + VERDE + pendingin['InstanceId'] + RESETT)
+        #        print("Time: " + VERDE +  pendingin['LaunchTime'] + RESETT)
+        #        print("Availability Zone: " + VERDE + pendingin['Placement']['AvailabilityZone'] + RESETT)
+
+
+   
     @staticmethod
     def state_terminated():
-        resp_terminated = client.describe_instances(Filters=[{
-            'Name':'instance-state-name',
-            'Values': ['terminated']
-        }])
+        #resp_terminated = client.describe_instances(Filters=[{
+        #    'Name':'instance-state-name',
+        #    'Values': ['terminated']
+        #}])
         
+        tprint('Pending')
+        
+        #for reservation in resp_terminated['Reservations']:
+        #    for tertminated in reservation['Instances']:
+        #        print("Instance ID: {}" + VERDE + tertminated['InstanceId'] + RESETT)
+        #        print("Time: " + VERDE +  tertminated['LaunchTime'] + RESETT)
+        #        print("Availability Zone: " + VERDE + tertminated['Placement']['AvailabilityZone'] + RESETT)     
         
 class Instance:
     """
@@ -213,9 +250,9 @@ class Instance:
         aws_start = client.start_instances(InstanceIds=[self.instanceid])
         
         for instances in aws_start['StartingInstances']:
-            print("Instance ID: {}".format(instances['InstanceId']))
-            print("Code ID: {}".format(instances['CurrentState']['Code']))
-            print("State ID: {}".format(instances['CurrentState']['Name']))
+            print(" [+] Instance ID: {}".format(instances['InstanceId']))
+            print(" [+] Code ID: {}".format(instances['CurrentState']['Code']))
+            print(" [+] State ID: {}".format(instances['CurrentState']['Name']))
         
     def stop_instances(self,instanceid):
         """[summary]
@@ -223,14 +260,14 @@ class Instance:
             instanceid ([str]): [stop the instance in aws]
         """
         self.instanceid = instanceid
-        print("The next instance will be stop for few seconds: {}".format(self.instanceid))
+        print(" [+] The next instance will be stop for few seconds: {}".format(self.instanceid))
         
         aws_stop = client.stop_instances(InstanceIds=[self.instanceid])
         
         for instances in aws_stop['StoppingInstances']:
-            print("Stop instance ID: {}".format(instances['InstanceId']))
-            print("Code: {}".format(instances['CurrentState']['Code']))
-            print("Code: {}".format(instances['CurrentState']['Name']))
+            print(" [+] Stop instance ID: {}".format(instances['InstanceId']))
+            print(" [+] Code: {}".format(instances['CurrentState']['Code']))
+            print(" [+] Code: {}".format(instances['CurrentState']['Name']))
             
     def terminate_instances(self,instanceid):
         """[summary]
@@ -241,9 +278,9 @@ class Instance:
         aws_terminate = client.terminate_instances(InstanceIds=[self.instanceid])
         
         for instances in aws_terminate['TerminatingInstances']:
-            print("Stopping instance ID: " + RRED + instances['InstanceId'] + RESETT)
-            print("Code: {}".format(instances['CurrentState']['Code']))
-            print("Status: " + CYYAN + instances['CurrentState']['Name'] + RESETT)
+            print(" [+] Stopping instance ID: " + RRED + instances['InstanceId'] + RESETT)
+            print(" [+] Code: {}".format(instances['CurrentState']['Code']))
+            print(" [+] Status: " + CYYAN + instances['CurrentState']['Name'] + RESETT)
     
     @staticmethod
     def getinfo_instances():
@@ -272,35 +309,35 @@ class Instance:
         for reserved in resp['Reservations']:
             for info in reserved['Instances']:
                 
-                print(Fore.LIGHTBLUE_EX + "Image ID: {}".format(info['ImageId'] + Fore.RESET))
-                print("Instance ID: {}".format(info['InstanceId']))
-                print("SSH Keys AWS: {}".format(info['KeyName']))
-                print(info['LaunchTime'])
-                print(info['Monitoring']['State'] + "\n")
+                print(BBLUE + "Image ID: {}".format(info['ImageId'] + RESETT))
+                print(" [+] Instance ID: {}".format(info['InstanceId']))
+                print(" [+] SSH Keys AWS: {}".format(info['KeyName']))
+                print(" [+] Launch time: " + info['LaunchTime'])
+                print(" [+] Monitoring state: " + info['Monitoring']['State'] + "\n")
                 
         print(RRED + "------" *10 + Fore.RESET)
         
         for getinfo2 in resp['Reservations']:
             for info2 in getinfo2['Instances']:
-                    print("Availability Zone: {}".format(info2['Placement']['AvailabilityZone']))
-                    print("Group name: {}".format(info2['Placement']['GroupName']))
-                    print("Tenancy: {}".format(info2['Placement']['Tenancy']  + "\n"))
+                    print(" [+] Availability Zone: {}".format(info2['Placement']['AvailabilityZone']))
+                    print(" [+] Group name: {}".format(info2['Placement']['GroupName']))
+                    print(" [+] Tenancy: {}".format(info2['Placement']['Tenancy']  + "\n"))
 
         
         for publicinfo in resp['Reservations']:
             for pbl in publicinfo['Instances']:
                 print(RRED + "------" *6 + RESETT)
                 print(VERDE + "\n\t\tPublic options\n"  + RESETT)
-                print("Your Public DNSname: " + VERDE + pbl['PublicDnsName'] + RESETT )
-                print("Your Public IP: " + VERDE + pbl['PublicIpAddress']  + RESETT )
-                print("Your Arch: {}".format(pbl['Architecture']))
-                print("State Name: {}".format(pbl['State']['Name']))
-                print("State code: " + VERDE + str(pbl['State']['Code']) + RESETT)
-                print("Subnet ID: {}".format(pbl['SubnetId']))
-                print("VPC ID: " + VERDE + pbl['VpcId'] + RESETT)
+                print(" [+] Your Public DNSname: " + VERDE + pbl['PublicDnsName'] + RESETT )
+                print(" [+] Your Public IP: " + VERDE + pbl['PublicIpAddress']  + RESETT )
+                print(" [+] Your Arch: {}".format(pbl['Architecture']))
+                print(" [+] State Name: {}".format(pbl['State']['Name']))
+                print(" [+] State code: " + VERDE + str(pbl['State']['Code']) + RESETT)
+                print(" [+] Subnet ID: {}".format(pbl['SubnetId']))
+                print(" [+] VPC ID: " + VERDE + pbl['VpcId'] + RESETT)
                 
                 for bdm in pbl['BlockDeviceMappings']:
-                    print("Device Name: " + CYYAN + bdm['DeviceName'] + RESETT)
+                    print(" [+] Device Name: " + CYYAN + bdm['DeviceName'] + RESETT)
                     print(CYYAN + "------" *5 + RESETT)
 
                 for element in pbl['ProductCodes']:
@@ -321,56 +358,7 @@ def main():
     tprint('hAcksWlabS')
     print(Fore.GREEN + "\tBy: Moises Tapia\t" + RESETT + VERDE + "Github: https://github.com/MoisesTapia/" + RESETT)
 
-def ssh_key_gen(keyssh):
-    """[summary]
-    Args:
-        keyssh ([str]): [create a new ssh keys in aws]
-    """
-    keypair = client.create_key_pair(KeyName=keyssh)
-    
-    print("Name of the SSH Key: " + VERDE + keypair.get('KeyName') + RESETT)
-    print("Key Pair ID: " + RRED + keypair.get('KeyPairId') + RESETT)
-    
-    print("The Key Finger Print: " + CYYAN + str(keypair.get('KeyFingerprint')) + RESETT)
-    
-    print("Copy the next string inside of anywhere txt file: \n")
-    
-    print(CYYAN + keypair.get('KeyMaterial') + RESETT)
-    
-    print(RRED + "------" *10 + RESETT)
-   
-def describe_ssh_keys():
-    """get the all information about ssh keys stored in aws"""
-    rep_describe = client.describe_key_pairs()
-    # print(rep_describe) debugging response
-    
-    tprint('SSH Keys')
-    print("-------------------------" * 3 + "\n")
-    
-    for key in rep_describe['KeyPairs']:
-        print(YELLOW + "\t\t Information of Key \n" + RESETT)
-        print("Key Fingerprint: " + RRED + str(key['KeyName']) + RESETT)
-        print("Key ID: " + VERDE + str(key['KeyPairId']) + RESETT)
-        print("Key Fingerprint: " + CYYAN + str(key['KeyFingerprint']) + RESETT)
-        print("-------------------------" * 3 + "\n")       
-    
-
-awsargp = parser.parse_args()
-
-AWSIMAGE    = "ami-050184d2d97a1193f" 
-AWSTYPE     = awsargp.size 
-AWSMAX      = awsargp.maxvm
-AWSMIN      = awsargp.minvm
-AWSKEYPAIR  = awsargp.keys
-
-
-awsintances = Instance(AWSIMAGE, AWSTYPE, AWSMAX, AWSMIN, AWSKEYPAIR)
-
-
-
-#print(awsargp) debugging argparse commands
-
-if len(sys.argv) < 2:
+def print_help():
     print(Fore.LIGHTGREEN_EX + 
     """
     basic commands: hackslabs.py [-h] [-z SIZE] [-mx MAXVM] [-mn MINVM] [-k KEYS]
@@ -392,8 +380,138 @@ if len(sys.argv) < 2:
             python3 hackslabs.py --terminate/t <id_instances>
         """ + RESETT)
     
-    sys.exit(1)
 
+def ssh_key_gen(keyssh, ssh_keyname):
+    """[summary]
+    Args:
+        keyssh ([str]): [create a new ssh keys in aws]
+    """
+    try:
+        file_name = ssh_keyname
+        keypair = client.create_key_pair(KeyName=keyssh)
+        encode_key = keypair.get('KeyMaterial')
+        
+        print("[✔]" + "Name of the SSH Key: " + VERDE + keypair.get('KeyName') + RESETT)
+        print("[✔]" + "Key Pair ID: " + RRED + keypair.get('KeyPairId') + RESETT)
+        print("[✔]" + "The Key Finger Print: " + CYYAN + str(keypair.get('KeyFingerprint')) + RESETT)
+
+        print(" [+] Your key was generated and saved in the file named : \n")
+
+        f= open(file_name,"w+")
+        f.writelines(encode_key)
+        print(" [✔] file name: " + VERDE +  f.name + RESETT + "\n")
+        f.close()
+        print(RRED + "------" *10 + RESETT)
+         
+    except botocore.exceptions.ClientError as e:
+        if e.response['Error']['Code'] == 'InvalidKeyPair.Duplicate':
+            print(RRED + "\n\t\t[X] " + CYYAN + "Error occurred the keys already exist" + RESETT + "\n")
+            print(VERDE + "\t\tList the existent Keys with: " + BBLUE + " -ds" + RESETT + "\n")
+
+
+def describe_ssh_keys():
+    """get the all information about ssh keys stored in aws"""
+    rep_describe = client.describe_key_pairs()
+    # print(rep_describe) debugging response
+    
+    tprint('SSH Keys')
+    print("-------------------------" * 3 + "\n")
+    
+    for key in rep_describe['KeyPairs']:
+        print(YELLOW + "\t\t Information of Key \n" + RESETT)
+        print(" [✔] Key Fingerprint: " + RRED + str(key['KeyName']) + RESETT)
+        print(" [✔] Key ID: " + VERDE + str(key['KeyPairId']) + RESETT)
+        print(" [✔] Key Fingerprint: " + CYYAN + str(key['KeyFingerprint']) + RESETT)
+        print("-------------------------" * 3 + "\n")       
+    
+def types_instances():
+    
+    authors = Table(show_header=True, header_style="bold green")
+    authors.add_column("Type", style="dim", justify="center")
+    authors.add_column("vCPU*", style="dim", justify="center")
+    authors.add_column("CPU Credits / hour", style="dim", justify="center")
+    authors.add_column("Mem GiB", style="dim", justify="center")
+    authors.add_column("Storage", style="dim", justify="center")
+    authors.add_column("Network Performance", style="dim", justify="center")
+    authors.add_row(
+        "t2.nano",
+        "1",
+        "3",
+        "0.5",
+        "EBS-Only",
+        "Low"
+    )
+    authors.add_row(
+        "t2.micro",
+        "1",
+        "6",
+        "1",
+        "EBS-Only",
+        "Low to Moderate"
+    )
+    authors.add_row(
+        "t2.small",
+        "1",
+        "12",
+        "2",
+        "EBS-Only",
+        "Low to Moderate"
+    )
+    authors.add_row(
+        "t2.medium",
+        "2",
+        "24",
+        "4",
+        "EBS-Only",
+        "Low to Moderate"
+    )
+    authors.add_row(
+        "t2.large",
+        "2",
+        "36",
+        "8",
+        "EBS-Only",
+        "Low to Moderate"
+    )
+    authors.add_row(
+        "t2.xlarge",
+        "4",
+        "54",
+        "16",
+        "EBS-Only",
+        "Moderate"
+    )
+    authors.add_row(
+        "t2.2xlarge",
+        "8",
+        "81",
+        "32",
+        "EBS-Only",
+        "Moderate"
+    )
+    console.print(authors)
+    
+def script_authors():
+    pass
+
+awsargp = parser.parse_args()
+
+AWSIMAGE    = "ami-050184d2d97a1193f" 
+AWSTYPE     = awsargp.size 
+AWSMAX      = awsargp.maxvm
+AWSMIN      = awsargp.minvm
+AWSKEYPAIR  = awsargp.keys
+
+
+awsintances = Instance(AWSIMAGE, AWSTYPE, AWSMAX, AWSMIN, AWSKEYPAIR)
+
+getstatus = InstaceState()
+
+#print(awsargp) debugging argparse commands
+
+if len(sys.argv) < 2:
+    print_help()
+    sys.exit(1)
 
 if awsargp.launch and awsargp.size and awsargp.maxvm and awsargp.minvm and awsargp.keys:
     main()
@@ -403,17 +521,43 @@ if awsargp.launch and awsargp.size and awsargp.maxvm and awsargp.minvm and awsar
     except botocore.exceptions.ClientError as e:
         if e.response['Error']['Code'] == 'InvalidKeyPair.NotFound':
             print(RRED +  "\tSSH Keys not found, you need a key to connect to your instances" + RESETT)  
+elif awsargp.launch and awsargp.size and awsargp.maxvm and awsargp.minvm and not awsargp.keys:
+    print(RRED + "\n\t\tSet your AWS SSH Keys ... " + RESETT)
+    print(RRED + """
+          \n\t\tIf you do not have ssh keys you can generate a new ssh keys...
+           python3 hackslabs.py -kg <name_key> -kn name.txt/.pem
+          """ + RESETT)
+elif awsargp.launch and not awsargp.size and awsargp.maxvm and awsargp.minvm and awsargp.keys:
+    print(RRED + "\n\t\tSet the type of instance ... " + RESETT + "\n")
+    print("\t\tSee more in: " + VERDE + "https://aws.amazon.com/ec2/instance-types/" + RESETT)   
 elif awsargp.start:
     awsintances.start_instances(awsargp.start)
 elif awsargp.stop:
     awsintances.stop_instances(awsargp.stop)
 elif awsargp.terminate:
     awsintances.terminate_instances(awsargp.terminate)    
-elif awsargp.getinfo:
+elif awsargp.getinfo == "vm":
     awsintances.getinfo_instances()
-elif awsargp.sshkeygen:
+elif awsargp.sshkeygen and awsargp.kgname:
     print(RRED + "\n\t\tGenerating your new SSH Key " + RESETT)
-    print("\tSave this key: \n")
-    ssh_key_gen(awsargp.sshkeygen)
-elif awsargp.awsdescribe:
+    ssh_key_gen(awsargp.sshkeygen, awsargp.kgname)
+elif awsargp.sshkeygen and not awsargp.kgname:
+    print(RRED + "\n\t\tPlease Set the name of your File ... " + RESETT)
+    print(CYYAN + "\n\t\tusage mode: python3 hackslabs.py -kg <name_key> -kn name.txt/.pem" + RESETT + "\n")
+elif awsargp.awsdescribe == "list":
     describe_ssh_keys()
+elif awsargp.running == "vm":
+    getstatus.state_running()
+elif awsargp.terminated == "vm":
+    getstatus.state_terminated()
+elif awsargp.pending == "vm":
+    getstatus.state_pending()
+elif awsargp.inatnces == "show":
+    types_instances()
+elif awsargp.authors == "list":
+    script_authors()
+else:
+    print("\n" + "▀▄▀▄▀▄▀▄▀▄▀▄▀▄▀▄▀▄▀▄▀▄▀" * 4)
+    tprint('Error 404', font="knob")
+    print("▀▄▀▄▀▄▀▄▀▄▀▄▀▄▀▄▀▄▀▄▀▄▀" * 4 + "\n")
+    print_help()

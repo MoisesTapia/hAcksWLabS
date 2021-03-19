@@ -4,3 +4,5 @@ argparse==1.4.0
 boto3==1.17.25
 awscli==1.19.27
 rsa>=4.7 # not directly required, pinned by Snyk to avoid a vulnerability
+argparse-color-formatter==1.2.2.post2
+rich==9.13.0
