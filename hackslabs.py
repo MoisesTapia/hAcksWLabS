@@ -122,6 +122,9 @@ class InstaceState():
 
     @staticmethod
     def state_running():
+        """Return all Vm with status running
+            'Values': ['running']
+        """
         resp_run = client.describe_instances(Filters=[{
             'Name':'instance-state-name',
             'Values': ['running']
@@ -137,6 +140,9 @@ class InstaceState():
   
     @staticmethod
     def state_stopped():
+        """Return all Vm with status stopped
+            'Values': ['stopped']
+        """
         resp_stopped = client.describe_instances(Filters=[{
             'Name':'instance-state-name',
             'Values': ['stopped']
@@ -152,6 +158,9 @@ class InstaceState():
 
     @staticmethod
     def state_pending():
+        """Return all Vm with status pending
+            'Values': ['pending']
+        """        
         resp_pending = client.describe_instances(Filters=[{
             'Name':'instance-state-name',
             'Values': ['pending']
@@ -167,6 +176,9 @@ class InstaceState():
 
     @staticmethod
     def state_terminated():
+        """Return all Vm with status terminated
+            'Values': ['terminated']
+        """
         resp_terminated = client.describe_instances(Filters=[{
             'Name':'instance-state-name',
             'Values': ['terminated']
@@ -364,6 +376,7 @@ def main():
     print(Fore.GREEN + "\tBy: Moises Tapia\t" + RESETT + VERDE + "Github: https://github.com/MoisesTapia/" + RESETT)
 
 def print_help():
+    """ Print the first Main is the srcrip do not recive some argument"""
     print(Fore.LIGHTGREEN_EX + 
     """
     basic commands: hackslabs.py [-h] [-z SIZE] [-mx MAXVM] [-mn MINVM] [-k KEYS]
@@ -386,7 +399,6 @@ def print_help():
             
         """ + RESETT)
     
-
 def ssh_key_gen(keyssh, ssh_keyname):
     """[summary]
     Args:
@@ -414,9 +426,8 @@ def ssh_key_gen(keyssh, ssh_keyname):
             print(RRED + "\n\t\t[X] " + CYYAN + "Error occurred the keys already exist" + RESETT + "\n")
             print(VERDE + "\t\tList the existent Keys with: " + BBLUE + " -ds" + RESETT + "\n")
 
-
 def describe_ssh_keys():
-    """get the all information about ssh keys stored in aws"""
+    """Get the all information about ssh keys stored in aws"""
     rep_describe = client.describe_key_pairs()
     # print(rep_describe) debugging response
     
@@ -431,7 +442,9 @@ def describe_ssh_keys():
         print("-------------------------" * 3 + "\n")       
     
 def types_instances():
-    
+    """Print:
+    The table with all instances types in aws in wich you can deploy your Kali Linux VM
+    """
     authors = Table(show_header=True, header_style="bold green")
     authors.add_column("Type", style="dim", justify="center")
     authors.add_column("vCPU*", style="dim", justify="center")
@@ -498,7 +511,19 @@ def types_instances():
     console.print(authors)
     
 def script_authors():
-    pass
+    """Print the all contributors"""
+    authors = Table(show_header=True, header_style="bold green")
+    authors.add_column("Username", style="dim", justify="center")
+    authors.add_column("Name", style="dim", justify="center")
+    authors.add_column("Twitter", style="dim", justify="center")
+    authors.add_column("Url", style="dim", justify="center")
+    authors.add_row(
+        "moisestapia",
+        "Moises Tapia",
+        "@equinockx",
+        "https://github.com/MoisesTapia"
+    )
+    console.print(authors)
 
 awsargp = parser.parse_args()
 
