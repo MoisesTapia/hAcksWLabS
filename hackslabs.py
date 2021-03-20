@@ -122,7 +122,8 @@ class InstaceState():
 
     @staticmethod
     def state_running():
-        """Return all Vm with status running
+        """
+            Return all Vm with status running
             'Values': ['running']
         """
         resp_run = client.describe_instances(Filters=[{
@@ -140,7 +141,8 @@ class InstaceState():
   
     @staticmethod
     def state_stopped():
-        """Return all Vm with status stopped
+        """
+            Return all Vm with status stopped
             'Values': ['stopped']
         """
         resp_stopped = client.describe_instances(Filters=[{
@@ -158,7 +160,8 @@ class InstaceState():
 
     @staticmethod
     def state_pending():
-        """Return all Vm with status pending
+        """
+            Return all Vm with status pending
             'Values': ['pending']
         """        
         resp_pending = client.describe_instances(Filters=[{
@@ -176,7 +179,8 @@ class InstaceState():
 
     @staticmethod
     def state_terminated():
-        """Return all Vm with status terminated
+        """
+            Return all Vm with status terminated
             'Values': ['terminated']
         """
         resp_terminated = client.describe_instances(Filters=[{
