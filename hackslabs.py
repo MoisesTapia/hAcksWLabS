@@ -1,4 +1,4 @@
-#!/bin/env python
+#!usr/bin/python
 # Author: Moises Tapia(equinockx)
 # Github: https://github.com/MoisesTapia
 #
