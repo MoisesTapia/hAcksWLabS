@@ -10,3 +10,5 @@ before_install:
   
 script:
   - docker exec -ti awshacks python3 hackslabs.py --help
+  - docker exec -ti awshacks python3 hackslabs.py -it show
+  - docker exec -ti awshacks python3 hackslabs.py --version
