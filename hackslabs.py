@@ -123,8 +123,8 @@ class InstaceState():
     @staticmethod
     def state_running():
         """
-            Return all Vm with status running
-            'Values': ['running']
+        Return all Vm with status running
+        'Values': ['running']
         """
         resp_run = client.describe_instances(Filters=[{
             'Name':'instance-state-name',
@@ -142,8 +142,8 @@ class InstaceState():
     @staticmethod
     def state_stopped():
         """
-            Return all Vm with status stopped
-            'Values': ['stopped']
+        Return all Vm with status stopped
+        'Values': ['stopped']
         """
         resp_stopped = client.describe_instances(Filters=[{
             'Name':'instance-state-name',
@@ -161,8 +161,8 @@ class InstaceState():
     @staticmethod
     def state_pending():
         """
-            Return all Vm with status pending
-            'Values': ['pending']
+        Return all Vm with status pending
+        'Values': ['pending']
         """        
         resp_pending = client.describe_instances(Filters=[{
             'Name':'instance-state-name',
@@ -180,8 +180,8 @@ class InstaceState():
     @staticmethod
     def state_terminated():
         """
-            Return all Vm with status terminated
-            'Values': ['terminated']
+        Return all Vm with status terminated
+        'Values': ['terminated']
         """
         resp_terminated = client.describe_instances(Filters=[{
             'Name':'instance-state-name',
@@ -380,7 +380,7 @@ def main():
     print(Fore.GREEN + "\tBy: Moises Tapia\t" + RESETT + VERDE + "Github: https://github.com/MoisesTapia/" + RESETT)
 
 def print_help():
-    """ Print the first Main is the srcrip do not recive some argument"""
+    """Print the first Main is the srcrip do not recive some argument"""
     print(Fore.LIGHTGREEN_EX + 
     """
     basic commands: hackslabs.py [-h] [-z SIZE] [-mx MAXVM] [-mn MINVM] [-k KEYS]
