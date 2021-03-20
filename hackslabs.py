@@ -7,6 +7,7 @@ import boto3 as b3
 import argparse as argp
 from argparse_color_formatter import ColorHelpFormatter
 from rich.console import Console
+from rich.table import Column, Table
 from art import tprint
 from colorama import Fore
 import botocore.exceptions
