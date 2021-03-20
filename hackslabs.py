@@ -108,7 +108,7 @@ otheropt.add_argument("-ds", "--describe", dest="awsdescribe",
 otheropt.add_argument("-kn", "--key-name", dest="kgname",
                       type=str,
                       help="Name of the file where the will be save it, by default is saved without extension")
-otheropt.add_argument("-it", "--intances-types",dest="inatnces",
+otheropt.add_argument("-it", "--intances-types",dest="instances",
                       type=str,
                       help="Show the table of instances")
 
@@ -122,59 +122,64 @@ class InstaceState():
 
     @staticmethod
     def state_running():
-        #resp_run = client.describe_instances(Filters=[{
-        #    'Name':'instance-state-name',
-        #    'Values': ['running']
-        #}])
+        resp_run = client.describe_instances(Filters=[{
+            'Name':'instance-state-name',
+            'Values': ['running']
+        }])
         
         tprint('Runnung')
-    
+        
+        for reservation in resp_run['Reservations']:
+            for instances in reservation['Instances']:
+                print(" [🏃] Id of instances: {}".format(instances['InstanceId']))
+                print(" [🏃] Date: ", instances['LaunchTime'])
+                print(" [🏃] Availability Zone: {}".format(instances['Placement']['AvailabilityZone']))
+  
     @staticmethod
     def state_stopped():
-        #resp_stopped = client.describe_instances(Filters=[{
-        #    'Name':'instance-state-name',
-        #    'Values': ['stopped']
-        #}])
+        resp_stopped = client.describe_instances(Filters=[{
+            'Name':'instance-state-name',
+            'Values': ['stopped']
+        }])
         
         tprint('Stopped')
 
-        #for reservation in resp_stopped['Reservations']:
-        #    for stoppped in reservation['Instances']:
-        #        print("Instance ID: {}" + VERDE + stoppped['InstanceId'] + RESETT)
-        #        print("Time: " + VERDE +  stoppped['LaunchTime'] + RESETT)
-        #        print("Availability Zone: " + VERDE + stoppped['Placement']['AvailabilityZone'] + RESETT)
+        for reservation in resp_stopped['Reservations']:
+            for instances in reservation['Instances']:
+                print(" [ 🛑 ] Id of instances: {}".format(instances['InstanceId']))
+                print(" [ 🛑 ] Date: ", instances['LaunchTime'])
+                print(" [ 🛑 ] Availability Zone: {}".format(instances['Placement']['AvailabilityZone']))
 
     @staticmethod
     def state_pending():
-        #resp_pending = client.describe_instances(Filters=[{
-        #    'Name':'instance-state-name',
-        #    'Values': ['pending']
-        #}])
+        resp_pending = client.describe_instances(Filters=[{
+            'Name':'instance-state-name',
+            'Values': ['pending']
+        }])
         
         tprint('Pending')
         
-        #for reservation in resp_pending['Reservations']:
-        #    for pendingin in reservation['Instances']:
-        #        print("Instance ID: {}" + VERDE + pendingin['InstanceId'] + RESETT)
-        #        print("Time: " + VERDE +  pendingin['LaunchTime'] + RESETT)
-        #        print("Availability Zone: " + VERDE + pendingin['Placement']['AvailabilityZone'] + RESETT)
+        for reservation in resp_pending['Reservations']:
+            for instances in reservation['Instances']:
+                print(" [⌛] Id of instances: {}".format(instances['InstanceId']))
+                print(" [⌛] Date: ", instances['LaunchTime'])
+                print(" [⌛] Availability Zone: {}".format(instances['Placement']['AvailabilityZone']))
 
-
-   
     @staticmethod
     def state_terminated():
-        #resp_terminated = client.describe_instances(Filters=[{
-        #    'Name':'instance-state-name',
-        #    'Values': ['terminated']
-        #}])
+        resp_terminated = client.describe_instances(Filters=[{
+            'Name':'instance-state-name',
+            'Values': ['terminated']
+        }])
         
-        tprint('Pending')
+        tprint('Terminated')
         
-        #for reservation in resp_terminated['Reservations']:
-        #    for tertminated in reservation['Instances']:
-        #        print("Instance ID: {}" + VERDE + tertminated['InstanceId'] + RESETT)
-        #        print("Time: " + VERDE +  tertminated['LaunchTime'] + RESETT)
-        #        print("Availability Zone: " + VERDE + tertminated['Placement']['AvailabilityZone'] + RESETT)     
+        for reservation in resp_terminated['Reservations']:
+            for instances in reservation['Instances']:
+                print(" [⚰️ ] Id of instances: {}".format(instances['InstanceId']))
+                print(" [⚰️ ] Date: ", instances['LaunchTime'])
+                print(" [⚰️ ] Availability Zone: {}".format(instances['Placement']['AvailabilityZone']))
+                print("---" * 15 + "\n")   
         
 class Instance:
     """
@@ -312,7 +317,7 @@ class Instance:
                 print(BBLUE + "Image ID: {}".format(info['ImageId'] + RESETT))
                 print(" [+] Instance ID: {}".format(info['InstanceId']))
                 print(" [+] SSH Keys AWS: {}".format(info['KeyName']))
-                print(" [+] Launch time: " + info['LaunchTime'])
+                print(" [+] Date: ", info['LaunchTime'])
                 print(" [+] Monitoring state: " + info['Monitoring']['State'] + "\n")
                 
         print(RRED + "------" *10 + Fore.RESET)
@@ -378,6 +383,7 @@ def print_help():
             
             termibate instances 
             python3 hackslabs.py --terminate/t <id_instances>
+            
         """ + RESETT)
     
 
@@ -548,11 +554,13 @@ elif awsargp.awsdescribe == "list":
     describe_ssh_keys()
 elif awsargp.running == "vm":
     getstatus.state_running()
+elif awsargp.stopped == "vm":
+    getstatus.state_stopped()
 elif awsargp.terminated == "vm":
     getstatus.state_terminated()
 elif awsargp.pending == "vm":
     getstatus.state_pending()
-elif awsargp.inatnces == "show":
+elif awsargp.instances == "show":
     types_instances()
 elif awsargp.authors == "list":
     script_authors()
