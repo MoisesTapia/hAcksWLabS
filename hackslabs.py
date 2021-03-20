@@ -7,7 +7,6 @@ import boto3 as b3
 import argparse as argp
 from argparse_color_formatter import ColorHelpFormatter
 from rich.console import Console
-from rich.table import Column, Table
 from art import tprint
 from colorama import Fore
 import botocore.exceptions
@@ -417,7 +416,7 @@ def ssh_key_gen(keyssh, ssh_keyname):
         print("[✔]" + "Key Pair ID: " + RRED + keypair.get('KeyPairId') + RESETT)
         print("[✔]" + "The Key Finger Print: " + CYYAN + str(keypair.get('KeyFingerprint')) + RESETT)
 
-        print(" [+] Your key was generated and saved in the file named : \n")
+        print("\n[+] Your key was generated and saved in the file named : \n")
 
         f= open(file_name,"w+")
         f.writelines(encode_key)
