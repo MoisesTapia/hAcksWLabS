@@ -1,7 +1,7 @@
 #!usr/bin/python
 # Author: Moises Tapia(equinockx)
 # Github: https://github.com/MoisesTapia
-#
+# Twitter: 
 
 import boto3 as b3
 import argparse as argp
