@@ -16,8 +16,8 @@ RUN cd .aws && \
 WORKDIR /home/
 
 COPY requirements.txt .
-COPY hackslabs.py .
-
+COPY main.py .
+ADD modules/ .
 
 RUN apt-get update && \
     pip3 install -r requirements.txt && \
