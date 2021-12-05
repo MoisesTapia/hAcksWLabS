@@ -1,4 +1,4 @@
-FROM python:3.10.0b4-slim
+FROM python:3.10.0-slim
 
 LABEL NAME="hAckWsLabS"
 LABEL MAINTAINER="Equinockx moisestapia741@gmail.com"
